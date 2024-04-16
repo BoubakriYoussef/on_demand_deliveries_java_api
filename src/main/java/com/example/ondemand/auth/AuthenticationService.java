@@ -2,18 +2,13 @@ package com.example.ondemand.auth;
 
 
 import com.example.ondemand.config.JwtService;
-import com.example.ondemand.repositories.RoleRepository;
 import com.example.ondemand.repositories.UserRepository;
-import com.example.ondemand.entities.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.ondemand.entities.User;
-
-
-
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +30,10 @@ public class AuthenticationService {
         var user = User.builder()
                         .firstName(request.getFirstName())
                         .lastName(request.getLastName())
-                                .email(request.getEmail())
-                                        .password(passwordEncoder.encode(request.getPassword()))
-                                                        .build();
+                        .email(request.getEmail())
+                        .password(passwordEncoder.encode(request.getPassword()))
+                        .phone(request.getPhone())
+                        .build();
 
 
         userRepository.save(user);
@@ -55,10 +51,26 @@ public class AuthenticationService {
                             request.getPassword()
                     )
             );
+
             var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
              var jwtToken = jwtService.generateToken(user);
              return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
+    // Update User
+    public AuthenticationResponse updateUserPassword(ChangePasswordRequest changePasswordRequest, Long userId){
+        User user = userRepository.findById(userId)
+                        .orElseThrow(()->new RuntimeException("User not found :"+userId));
+
+        String newPassword = changePasswordRequest.getNewPassword();
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        String jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }

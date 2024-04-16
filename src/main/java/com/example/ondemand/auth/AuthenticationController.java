@@ -1,8 +1,7 @@
 package com.example.ondemand.auth;
 
 
-import com.example.ondemand.entities.Role;
-import com.example.ondemand.repositories.RoleRepository;
+import com.example.ondemand.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 public class AuthenticationController {
 
-
-    private final RoleRepository roleRepository;
 
     private final AuthenticationService service;
 
@@ -32,5 +29,13 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest request
             ){
         return ResponseEntity.ok(service.authenticate(request));
+    }
+
+    @PutMapping("/user/{userId}/changePassword")
+    public ResponseEntity<AuthenticationResponse> changePassword(
+            @RequestBody ChangePasswordRequest request,
+            @PathVariable Long userId
+    ){
+        return ResponseEntity.ok(service.updateUserPassword(request,userId));
     }
 }

@@ -1,10 +1,10 @@
 package com.example.ondemand.service.serviceImpl;
 
 import com.example.ondemand.repositories.UserRepository;
-import com.example.ondemand.entities.Role;
 import com.example.ondemand.entities.User;
 import com.example.ondemand.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,20 +15,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-
-
-    //Sign Up & Add user
-    @Override
-    public User addUser(User user, Role role) {
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-                throw new RuntimeException("Email already exists");
-            }
-
-            User savedUser = userRepository.save(user);
-            return (savedUser);
-        }
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Find User By Id
     @Override
@@ -50,6 +38,8 @@ public class UserServiceImpl implements UserService {
     public User updateUser(Long userId, User updatedUser) {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(()-> new RuntimeException("User not found with id :"+userId));
+        existingUser.setFirstName(updatedUser.getFirstName());
+        existingUser.setLastName(updatedUser.getLastName());
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setPassword(updatedUser.getPassword());
         existingUser.setPhone(updatedUser.getPhone());
@@ -61,13 +51,5 @@ public class UserServiceImpl implements UserService {
          userRepository.deleteById(id);
     }
 
-    @Override
-    public void updateUserPassword(Long userId, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()->new RuntimeException("User not found :"+userId));
 
-        //Need to add PasswordEncoder
-        user.setPassword(newPassword);
-        userRepository.save(user);
-    }
 }

@@ -37,7 +37,7 @@ public class UserController {
 
 
     //update user
-    @PutMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
         User user = userService.updateUser(userId, updatedUser);
         if (user != null) {
@@ -53,13 +53,5 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
-
-    // Update pwd
-    @PutMapping("/{userId}/password")
-    public ResponseEntity<Void> updateUserPassword(@PathVariable Long userId, @RequestParam String newPassword) {
-        userService.updateUserPassword(userId, newPassword);
-        return ResponseEntity.noContent().build();
-    }
-
 
 }

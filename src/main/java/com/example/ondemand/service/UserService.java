@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User addUser(User user, Role role);
-
     Optional<User> getUserById(Long id);
 
     List<User> getAllUsers();
@@ -18,6 +16,6 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    void updateUserPassword(Long userId, String newPassword);
+
 
 }
