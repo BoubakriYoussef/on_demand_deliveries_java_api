@@ -22,10 +22,9 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
+
     // Method to create user, save it in db and generate token
     public AuthenticationResponse register(RegisterRequest request) {
-
-
 
         var user = User.builder()
                         .firstName(request.getFirstName())
@@ -35,13 +34,13 @@ public class AuthenticationService {
                         .phone(request.getPhone())
                         .build();
 
-
         userRepository.save(user);
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
+
 
     //Authentication Manager has "authenticate" Method that will do the job and throw an Exception
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -59,7 +58,10 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
-    // Update User
+
+
+
+    // Update User Pwd
     public AuthenticationResponse updateUserPassword(ChangePasswordRequest changePasswordRequest, Long userId){
         User user = userRepository.findById(userId)
                         .orElseThrow(()->new RuntimeException("User not found :"+userId));
@@ -74,4 +76,50 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
+
+    // Update User Infos
+    public AuthenticationResponse updateUser(UpdateUserRequest updateUserRequest, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new RuntimeException("User not found :"+userId));
+
+        if(updateUserRequest.isFirstNamePresent()) {
+            user.setFirstName(updateUserRequest.getFirstName());
+        }
+
+        if(updateUserRequest.isLastNamePresent()) {
+            user.setLastName(updateUserRequest.getLastName());
+        }
+
+        if(updateUserRequest.isEmailPresent()) {
+            user.setEmail(updateUserRequest.getEmail());
+        }
+
+        if(updateUserRequest.isPhonePresent()) {
+            user.setPhone(updateUserRequest.getPhone());
+        }
+
+        userRepository.save(user);
+
+        String jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
