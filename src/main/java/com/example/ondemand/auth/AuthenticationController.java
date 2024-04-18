@@ -39,11 +39,20 @@ public class AuthenticationController {
     }
 
     @PutMapping("/user/{userId}/changePassword")
-    public ResponseEntity<AuthenticationResponse> changePassword(
+    public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request,
             @PathVariable Long userId
             ){
-        return ResponseEntity.ok(authenticationService.updateUserPassword(request,userId));
+        User authenticatedUser = authenticationService.getAuthenticatedUser();
+
+        if(!authenticatedUser.getId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only update your own information");
+        }
+
+       AuthenticationResponse response = authenticationService.updateUserPassword(request,userId);
+
+        return ResponseEntity.ok(response);
+
     }
 
     @PutMapping("/user/{userId}/updateUser")
