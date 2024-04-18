@@ -10,11 +10,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+
 
 @Builder
 @Data
@@ -41,23 +41,23 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String uuid;
     @OneToMany
-    private Collection<Availability> availabilities;
+    private List<Availability> availabilities;
     @ManyToOne
     private Role role;
     @OneToMany
-    private Collection<Restaurant> restaurants;
+    private List<Restaurant> restaurants;
     @OneToMany
-    private Collection<Estimation> estimations;
+    private List<Estimation> estimations;
     @OneToMany
-    private Collection<Delivery> deliveries;
+    private List<Delivery> deliveries;
     @OneToMany
-    private Collection<PricingStrategy> pricingStrategy;
+    private List<PricingStrategy> pricingStrategy;
 
     @OneToMany
-    private Collection<Cashout> cashouts;
+    private List<Cashout> cashouts;
 
     @OneToMany
-    private Collection<Rate> rates;
+    private List<Rate> rates;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

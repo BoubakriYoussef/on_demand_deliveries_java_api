@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -31,5 +32,5 @@ public class Restaurant {
     private Address address;
 
     @OneToMany
-    private Collection<Estimation> estimations;
+    private List<Estimation> estimations;
 }

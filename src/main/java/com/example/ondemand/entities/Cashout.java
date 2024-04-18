@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,9 +29,9 @@ public class Cashout {
 
     private Date date;
     @OneToMany
-    private Collection<Payment> payments;
+    private List<Payment> payments;
     @OneToMany
-    private Collection<Tip> tips;
+    private List<Tip> tips;
 
     @ManyToOne
     private User user;

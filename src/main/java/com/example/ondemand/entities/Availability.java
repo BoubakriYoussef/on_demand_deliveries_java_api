@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 
 @Data
@@ -22,7 +23,5 @@ public class Availability {
     private User user;
 
     @ManyToMany
-    private Collection<Day> days;
-
-
+    private List<Day> days;
 }

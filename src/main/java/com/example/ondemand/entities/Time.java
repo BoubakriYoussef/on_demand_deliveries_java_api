@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -25,5 +26,5 @@ public class Time {
     private String uuid;
 
     @ManyToMany
-    private Collection<Day> days;
+    private List<Day> days;
 }

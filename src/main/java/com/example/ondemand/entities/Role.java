@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -24,9 +25,9 @@ public class Role {
     private String uuid;
 
     @ManyToMany
-    private Collection<Permission> permissions;
+    private List<Permission> permissions;
 
     @OneToMany
-    private Collection<User> users;
+    private List<User> users;
 
 }

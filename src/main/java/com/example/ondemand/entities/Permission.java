@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -27,5 +28,5 @@ public class Permission {
 
 
     @ManyToMany
-    private Collection<Role> roles;
+    private List<Role> roles;
 }

@@ -20,6 +20,7 @@ public class JwtService {
 
     private static final String SECRET_KEY="9350a0b757b624afcf483cd8723dab51349deee5c4741064c1265aeae5ea898d";
     public String extractUsername(String token) {
+
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -37,7 +38,7 @@ public class JwtService {
     // Validate TOKEN & UserDetails to compare if token belongs to User
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
-        return (username == userDetails.getUsername()) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -62,7 +63,6 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis()+1000 * 60 * 24))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
-
     }
 
     // Method to extract all the pieces of information called CLaims

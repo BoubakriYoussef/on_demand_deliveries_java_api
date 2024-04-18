@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,7 +25,7 @@ public class Delivery {
     @Column(unique = true)
     private String uuid;
     @OneToMany
-    private Collection<Estimation> estimations;
+    private List<Estimation> estimations;
     @OneToOne
     private Orders orders;
     @OneToOne
@@ -34,7 +35,7 @@ public class Delivery {
     @ManyToOne
     private User user;
     @OneToMany
-    private Collection<Tip> tips;
+    private List<Tip> tips;
     @OneToMany
-    private Collection<Payment> payments;
+    private List<Payment> payments;
 }

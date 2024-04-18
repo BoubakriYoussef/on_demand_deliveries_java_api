@@ -6,9 +6,14 @@ import com.example.ondemand.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.ondemand.entities.User;
+
+import java.lang.reflect.Type;
+
 
 @Service
 @RequiredArgsConstructor
@@ -106,20 +111,14 @@ public class AuthenticationService {
                 .build();
     }
 
+    // Get authenticated User from SecurityContextHolder
 
+    public User getAuthenticatedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
 
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(()-> new RuntimeException("User not found"));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 }

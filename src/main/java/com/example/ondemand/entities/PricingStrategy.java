@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,7 +27,7 @@ public class PricingStrategy {
     @Column(unique = true)
     private String uuid;
     @OneToMany
-    private Collection<Estimation> estimations;
+    private List<Estimation> estimations;
     @ManyToOne
     private User user;
 }

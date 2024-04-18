@@ -35,18 +35,6 @@ public class UserServiceImpl implements UserService {
 
     // Update User Credentials
     @Override
-    public User updateUser(Long userId, User updatedUser) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(()-> new RuntimeException("User not found with id :"+userId));
-        existingUser.setFirstName(updatedUser.getFirstName());
-        existingUser.setLastName(updatedUser.getLastName());
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setPassword(updatedUser.getPassword());
-        existingUser.setPhone(updatedUser.getPhone());
-        return null;
-    }
-
-    @Override
     public void deleteUser(Long id) {
          userRepository.deleteById(id);
     }

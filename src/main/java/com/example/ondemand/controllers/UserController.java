@@ -36,16 +36,7 @@ public class UserController {
     }
 
 
-    //update user
-    @PatchMapping("/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
-        User user = userService.updateUser(userId, updatedUser);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+
 
     // delete user
     @DeleteMapping("/{userId}")

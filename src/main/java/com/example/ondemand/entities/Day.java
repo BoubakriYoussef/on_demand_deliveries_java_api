@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -24,8 +25,8 @@ public class Day {
     @Column(unique = true)
     private String uuid;
     @ManyToMany
-    private Collection<Availability> availabilities;
+    private List<Availability> availabilities;
 
     @ManyToMany
-    private Collection<Time> times;
+    private List<Time> times;
 }
