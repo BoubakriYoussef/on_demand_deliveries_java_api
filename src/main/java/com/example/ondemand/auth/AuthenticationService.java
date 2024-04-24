@@ -2,6 +2,8 @@ package com.example.ondemand.auth;
 
 
 import com.example.ondemand.config.JwtService;
+import com.example.ondemand.entities.Role;
+import com.example.ondemand.repositories.RoleRepository;
 import com.example.ondemand.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.ondemand.entities.User;
 
-import java.lang.reflect.Type;
+import java.util.Optional;
 
 
 @Service
@@ -27,9 +29,17 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final RoleRepository roleRepository;
+
 
     // Method to create user, save it in db and generate token
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request,String roleName) {
+
+        Role role = roleRepository.findByName(roleName);
+
+        if(role == null) {
+            throw  new IllegalArgumentException("Role not found with name :"+ roleName);
+        }
 
         var user = User.builder()
                         .firstName(request.getFirstName())
@@ -37,14 +47,18 @@ public class AuthenticationService {
                         .email(request.getEmail())
                         .password(passwordEncoder.encode(request.getPassword()))
                         .phone(request.getPhone())
+                        .role(role)
                         .build();
 
         userRepository.save(user);
+
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
+
+
 
 
     //Authentication Manager has "authenticate" Method that will do the job and throw an Exception
@@ -67,9 +81,13 @@ public class AuthenticationService {
 
 
     // Update User Pwd
-    public AuthenticationResponse updateUserPassword(ChangePasswordRequest changePasswordRequest, Long userId){
+    public AuthenticationResponse updateUserPassword(ChangePasswordRequest changePasswordRequest, Long userId, String currentPassword){
         User user = userRepository.findById(userId)
                         .orElseThrow(()->new RuntimeException("User not found :"+userId));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("The current Password is incorrect");
+        }
 
         String newPassword = changePasswordRequest.getNewPassword();
 
@@ -83,42 +101,14 @@ public class AuthenticationService {
     }
 
     // Update User Infos
-    public AuthenticationResponse updateUser(UpdateUserRequest updateUserRequest, Long userId){
-        User user = userRepository.findById(userId)
-                .orElseThrow(()->new RuntimeException("User not found :"+userId));
 
-        if(updateUserRequest.isFirstNamePresent()) {
-            user.setFirstName(updateUserRequest.getFirstName());
-        }
-
-        if(updateUserRequest.isLastNamePresent()) {
-            user.setLastName(updateUserRequest.getLastName());
-        }
-
-        if(updateUserRequest.isEmailPresent()) {
-            user.setEmail(updateUserRequest.getEmail());
-        }
-
-        if(updateUserRequest.isPhonePresent()) {
-            user.setPhone(updateUserRequest.getPhone());
-        }
-
-        userRepository.save(user);
-
-        String jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
-    }
 
     // Get authenticated User from SecurityContextHolder
-
     public User getAuthenticatedUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
 
         return userRepository.findByEmail(userEmail)
                 .orElseThrow(()-> new RuntimeException("User not found"));
-
     }
 }

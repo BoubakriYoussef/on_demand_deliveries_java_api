@@ -24,18 +24,14 @@ public class Delivery {
     private enum paymentMethod {CASH,CREDIT_CARD};
     @Column(unique = true)
     private String uuid;
-    @OneToMany
-    private List<Estimation> estimations;
+    @OneToOne
+    private Estimation estimation;
     @OneToOne
     private Orders orders;
-    @OneToOne
-    private Customer customer;
-    @OneToOne
-    private Address address;
+
     @ManyToOne
     private User user;
-    @OneToMany
-    private List<Tip> tips;
-    @OneToMany
-    private List<Payment> payments;
+
+    @OneToOne
+    private Payment payment;
 }

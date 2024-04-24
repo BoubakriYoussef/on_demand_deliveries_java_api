@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.security.PrivateKey;
 import java.util.Date;
 
 @Data
@@ -25,6 +26,10 @@ public class Orders {
 
     @Column(unique = true)
     private String uuid;
+
     @OneToOne
     private Delivery delivery;
+
+    @OneToOne
+    private Customer customer;
 }

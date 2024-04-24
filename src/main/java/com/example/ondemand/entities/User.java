@@ -40,18 +40,14 @@ public class User implements UserDetails {
 
     @Column(unique = true)
     private String uuid;
-    @OneToMany
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Availability> availabilities;
     @ManyToOne
     private Role role;
     @OneToMany
     private List<Restaurant> restaurants;
     @OneToMany
-    private List<Estimation> estimations;
-    @OneToMany
     private List<Delivery> deliveries;
-    @OneToMany
-    private List<PricingStrategy> pricingStrategy;
 
     @OneToMany
     private List<Cashout> cashouts;

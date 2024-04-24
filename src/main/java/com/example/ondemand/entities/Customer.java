@@ -21,5 +21,6 @@ public class Customer {
     private Address address;
 
     @OneToOne
-    private Delivery delivery;
+    private Orders orders;
+
 }

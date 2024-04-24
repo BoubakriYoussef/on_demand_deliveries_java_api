@@ -19,7 +19,7 @@ public class PricingStrategy {
 
     @Column(unique = true)
     private String name;
-    private enum unitOfMeasure {KM,MILE};
+    private UnitOfMeasure unitOfMeasure;
     private double deliveryFeePerMile;
     private double deliveryFeePerKilometer;
     private double serviceFee;
@@ -28,6 +28,5 @@ public class PricingStrategy {
     private String uuid;
     @OneToMany
     private List<Estimation> estimations;
-    @ManyToOne
-    private User user;
+
 }

@@ -1,7 +1,9 @@
 package com.example.ondemand.service;
 
-import com.example.ondemand.entities.Role;
+import com.example.ondemand.auth.AuthenticationResponse;
+import com.example.ondemand.auth.UpdateUserRequest;
 import com.example.ondemand.entities.User;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +14,9 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-
     void deleteUser(Long id);
 
+    AuthenticationResponse updateUser(UpdateUserRequest request, Long userId);
 
-
+    List<User> getUserByRole(String roleName);
 }

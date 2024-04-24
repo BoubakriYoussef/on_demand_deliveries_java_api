@@ -19,7 +19,7 @@ public class Tip {
     @Column(unique = true)
     private String uuid;
 
-    @ManyToOne
+    @OneToOne
     private Delivery delivery;
 
     @ManyToOne

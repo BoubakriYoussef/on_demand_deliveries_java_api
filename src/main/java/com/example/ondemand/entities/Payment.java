@@ -27,4 +27,7 @@ public class Payment {
 
     @ManyToOne
     private Cashout cashout;
+
+    @OneToOne
+    private Tip tip;
 }

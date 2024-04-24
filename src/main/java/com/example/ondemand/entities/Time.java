@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -19,8 +21,8 @@ public class Time {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Date start;
-    private Date end;
+    private LocalTime start;
+    private LocalTime end;
 
     @Column(unique = true)
     private String uuid;

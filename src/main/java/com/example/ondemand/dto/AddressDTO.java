@@ -1,18 +1,15 @@
-package com.example.ondemand.entities;
+package com.example.ondemand.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class AddressDTO {
     private String building;
     private String street;
     private String floor;
@@ -20,12 +17,5 @@ public class Address {
     private String landmark;
     private double latitude;
     private double longitude;
-
-    @Column(unique = true)
-    private String uuid;
-    @OneToOne
-    private Restaurant restaurant;
-    @OneToOne
-    private Customer customer;
 
 }
