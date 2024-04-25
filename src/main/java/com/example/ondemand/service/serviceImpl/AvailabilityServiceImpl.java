@@ -1,8 +1,8 @@
 package com.example.ondemand.service.serviceImpl;
 
-import com.example.ondemand.auth.AuthenticationService;
-import com.example.ondemand.dto.NewAvailabilityRequest;
-import com.example.ondemand.dto.NewTimeRequest;
+import com.example.ondemand.authentication.AuthService.AuthenticationService;
+import com.example.ondemand.dto.availabilityRequest.NewAvailabilityRequest;
+import com.example.ondemand.dto.availabilityRequest.NewTimeRequest;
 import com.example.ondemand.entities.Availability;
 import com.example.ondemand.entities.Day;
 import com.example.ondemand.entities.Time;
@@ -12,7 +12,6 @@ import com.example.ondemand.repositories.DayRepository;
 import com.example.ondemand.repositories.TimeRepository;
 import com.example.ondemand.service.AvailabilityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

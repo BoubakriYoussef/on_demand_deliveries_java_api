@@ -1,7 +1,6 @@
-package com.example.ondemand.auth;
+package com.example.ondemand.authentication.AuthRequest;
 
 
-import com.example.ondemand.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,8 +1,7 @@
 package com.example.ondemand.service.serviceImpl;
 
-import com.example.ondemand.dto.RoleDTO;
+import com.example.ondemand.dto.RoleRequest;
 import com.example.ondemand.entities.Role;
-import com.example.ondemand.entities.User;
 import com.example.ondemand.repositories.RoleRepository;
 import com.example.ondemand.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,9 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public Role addRole(RoleDTO roleDTO) {
+    public Role addRole(RoleRequest roleRequest) {
         var role = Role.builder()
-                .name(roleDTO.getName())
+                .name(roleRequest.getName())
                 .build();
         return roleRepository.save(role);
     }

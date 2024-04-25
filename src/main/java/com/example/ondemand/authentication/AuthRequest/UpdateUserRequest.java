@@ -1,4 +1,4 @@
-package com.example.ondemand.auth;
+package com.example.ondemand.authentication.AuthRequest;
 
 
 import lombok.AllArgsConstructor;

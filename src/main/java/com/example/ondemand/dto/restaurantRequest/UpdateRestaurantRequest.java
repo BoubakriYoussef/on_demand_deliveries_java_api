@@ -1,4 +1,4 @@
-package com.example.ondemand.dto;
+package com.example.ondemand.dto.restaurantRequest;
 
 
 import lombok.AllArgsConstructor;

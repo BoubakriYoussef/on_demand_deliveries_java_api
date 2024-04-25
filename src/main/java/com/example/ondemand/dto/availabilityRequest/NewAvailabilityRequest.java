@@ -1,12 +1,10 @@
-package com.example.ondemand.dto;
+package com.example.ondemand.dto.availabilityRequest;
 
-import com.example.ondemand.entities.Day;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data

@@ -4,6 +4,15 @@ import com.example.ondemand.entities.PricingStrategy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.util.List;
+import java.util.Optional;
+
 @RepositoryRestResource
 public interface PricingStrategyRepository extends JpaRepository<PricingStrategy,Long> {
+    PricingStrategy findByName(String name);
+
+    Optional<PricingStrategy> findPricingStrategiesById(Long id);
+
+
+    void deleteById(Long id);
 }

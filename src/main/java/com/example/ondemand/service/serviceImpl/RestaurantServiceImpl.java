@@ -1,7 +1,7 @@
 package com.example.ondemand.service.serviceImpl;
 
-import com.example.ondemand.dto.AddRestaurantAddressRequest;
-import com.example.ondemand.dto.UpdateRestaurantRequest;
+import com.example.ondemand.dto.restaurantRequest.AddRestaurantAddressRequest;
+import com.example.ondemand.dto.restaurantRequest.UpdateRestaurantRequest;
 import com.example.ondemand.entities.Address;
 import com.example.ondemand.entities.Restaurant;
 import com.example.ondemand.entities.User;
@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 
@@ -68,7 +67,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<Restaurant> getRestaurantsByUser(User user) {
+    public Restaurant getRestaurantsByUser(User user) {
         return restaurantRepository.findByUser(user);
     }
 

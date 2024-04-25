@@ -1,16 +1,18 @@
-package com.example.ondemand.dto;
+package com.example.ondemand.authentication.AuthRequest;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
-    private String name;
+public class AuthenticationResponse {
+
+
+    // Token that will be sent to the user
+    private String token;
 }

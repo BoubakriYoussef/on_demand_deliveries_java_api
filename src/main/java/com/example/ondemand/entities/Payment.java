@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,9 +15,10 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double paymentTime;
-    private double orderValue;
-    private double tipValue;
+
+    private double paymentAmount;
+    private LocalDateTime paymentTime;
+
     private double totalValue;
     private boolean isWithdrawDone;
 

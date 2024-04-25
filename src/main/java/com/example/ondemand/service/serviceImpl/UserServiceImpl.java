@@ -1,8 +1,8 @@
 package com.example.ondemand.service.serviceImpl;
 
-import com.example.ondemand.auth.AuthenticationResponse;
-import com.example.ondemand.auth.AuthenticationService;
-import com.example.ondemand.auth.UpdateUserRequest;
+import com.example.ondemand.authentication.AuthRequest.AuthenticationResponse;
+import com.example.ondemand.authentication.AuthService.AuthenticationService;
+import com.example.ondemand.authentication.AuthRequest.UpdateUserRequest;
 import com.example.ondemand.config.JwtService;
 import com.example.ondemand.repositories.UserRepository;
 import com.example.ondemand.entities.User;

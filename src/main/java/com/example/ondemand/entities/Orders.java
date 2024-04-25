@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.security.PrivateKey;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -21,8 +22,8 @@ public class Orders {
 
     private String orderDescription;
 
-    private Date orderTime;
-    private enum isPrepared {PREPARED, UNPREPARED};
+    private LocalDateTime orderTime;
+
 
     @Column(unique = true)
     private String uuid;

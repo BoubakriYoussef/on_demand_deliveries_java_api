@@ -1,6 +1,10 @@
-package com.example.ondemand.auth;
+package com.example.ondemand.authentication.AuthService;
 
 
+import com.example.ondemand.authentication.AuthRequest.AuthenticationRequest;
+import com.example.ondemand.authentication.AuthRequest.AuthenticationResponse;
+import com.example.ondemand.authentication.AuthRequest.ChangePasswordRequest;
+import com.example.ondemand.authentication.AuthRequest.RegisterRequest;
 import com.example.ondemand.config.JwtService;
 import com.example.ondemand.entities.Role;
 import com.example.ondemand.repositories.RoleRepository;
@@ -13,8 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.ondemand.entities.User;
-
-import java.util.Optional;
 
 
 @Service
@@ -33,7 +35,7 @@ public class AuthenticationService {
 
 
     // Method to create user, save it in db and generate token
-    public AuthenticationResponse register(RegisterRequest request,String roleName) {
+    public AuthenticationResponse register(RegisterRequest request, String roleName) {
 
         Role role = roleRepository.findByName(roleName);
 

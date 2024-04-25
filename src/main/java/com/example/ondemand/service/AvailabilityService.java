@@ -1,6 +1,6 @@
 package com.example.ondemand.service;
 
-import com.example.ondemand.dto.NewAvailabilityRequest;
+import com.example.ondemand.dto.availabilityRequest.NewAvailabilityRequest;
 import com.example.ondemand.entities.Availability;
 import com.example.ondemand.entities.User;
 

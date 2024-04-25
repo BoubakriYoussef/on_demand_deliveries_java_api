@@ -1,9 +1,8 @@
 package com.example.ondemand.controllers;
 
 
-import com.example.ondemand.dto.RoleDTO;
+import com.example.ondemand.dto.RoleRequest;
 import com.example.ondemand.entities.Role;
-import com.example.ondemand.entities.User;
 import com.example.ondemand.repositories.RoleRepository;
 import com.example.ondemand.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,9 @@ public class RoleController {
 
     @PostMapping("/addRole")
     public ResponseEntity<Role> addRole(
-            @RequestBody RoleDTO roleDTO
+            @RequestBody RoleRequest roleRequest
             ){
-        return ResponseEntity.ok(roleService.addRole(roleDTO));
+        return ResponseEntity.ok(roleService.addRole(roleRequest));
     }
 
 

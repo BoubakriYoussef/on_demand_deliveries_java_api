@@ -1,6 +1,10 @@
-package com.example.ondemand.auth;
+package com.example.ondemand.authentication.AuthController;
 
-import com.example.ondemand.entities.Role;
+import com.example.ondemand.authentication.AuthRequest.AuthenticationRequest;
+import com.example.ondemand.authentication.AuthRequest.AuthenticationResponse;
+import com.example.ondemand.authentication.AuthRequest.ChangePasswordRequest;
+import com.example.ondemand.authentication.AuthRequest.RegisterRequest;
+import com.example.ondemand.authentication.AuthService.AuthenticationService;
 import com.example.ondemand.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

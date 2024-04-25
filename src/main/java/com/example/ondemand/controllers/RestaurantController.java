@@ -1,8 +1,8 @@
 package com.example.ondemand.controllers;
 
 
-import com.example.ondemand.dto.AddRestaurantAddressRequest;
-import com.example.ondemand.dto.UpdateRestaurantRequest;
+import com.example.ondemand.dto.restaurantRequest.AddRestaurantAddressRequest;
+import com.example.ondemand.dto.restaurantRequest.UpdateRestaurantRequest;
 import com.example.ondemand.entities.Restaurant;
 import com.example.ondemand.entities.User;
 import com.example.ondemand.repositories.RestaurantRepository;
@@ -15,8 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/restaurant")
@@ -55,14 +53,14 @@ public class RestaurantController {
 
     //Afficher restaurant par user Id
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Restaurant>> getRestaurantsByUser(@PathVariable Long userId) {
+    public ResponseEntity<Restaurant> getRestaurantsByUser(@PathVariable Long userId) {
         // Suppose you have a way to retrieve the User object by userId
         User user = userRepository.findById(userId)
                 .orElseThrow();
 
 
-        List<Restaurant> restaurants = restaurantService.getRestaurantsByUser(user);
-        return ResponseEntity.ok(restaurants);
+        Restaurant restaurant = restaurantService.getRestaurantsByUser(user);
+        return ResponseEntity.ok(restaurant);
     }
 
 

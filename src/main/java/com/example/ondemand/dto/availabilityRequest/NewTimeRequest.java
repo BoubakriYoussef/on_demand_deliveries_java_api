@@ -1,16 +1,12 @@
-package com.example.ondemand.dto;
+package com.example.ondemand.dto.availabilityRequest;
 
 
-import com.example.ondemand.entities.Time;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 
 @Data

@@ -1,5 +1,4 @@
-package com.example.ondemand.dto;
-
+package com.example.ondemand.dto.EstimationRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,10 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddRestaurantAddressRequest {
-
-    private String restaurantName;
-    private String phoneNumber;
+public class AddressRequest {
     private String building;
     private String street;
     private String floor;

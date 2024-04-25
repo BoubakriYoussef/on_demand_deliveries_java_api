@@ -2,7 +2,6 @@ package com.example.ondemand.service.serviceImpl;
 
 import com.example.ondemand.dto.NewPriceStrategyRequest;
 import com.example.ondemand.entities.PricingStrategy;
-import com.example.ondemand.entities.User;
 import com.example.ondemand.repositories.PricingStrategyRepository;
 import com.example.ondemand.service.PricingStrategyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +50,10 @@ public class PricingStrategyServiceImpl implements PricingStrategyService {
         pricingStrategy.setDeliveryFeePerKilometer(request.getDeliveryFeePerKilometer());
         pricingStrategy.setServiceFee(request.getServiceFee());
         return pricingStrategyRepository.save(pricingStrategy);
+    }
+
+    @Override
+    public Optional<PricingStrategy> getPricingStrategyById(Long id) {
+        return pricingStrategyRepository.findPricingStrategiesById(id);
     }
 }

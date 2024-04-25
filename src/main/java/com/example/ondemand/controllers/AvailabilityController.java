@@ -1,7 +1,7 @@
 package com.example.ondemand.controllers;
 
 
-import com.example.ondemand.dto.NewAvailabilityRequest;
+import com.example.ondemand.dto.availabilityRequest.NewAvailabilityRequest;
 import com.example.ondemand.entities.Availability;
 import com.example.ondemand.entities.User;
 import com.example.ondemand.repositories.UserRepository;

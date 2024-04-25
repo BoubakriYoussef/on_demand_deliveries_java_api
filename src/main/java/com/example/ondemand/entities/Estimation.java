@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -15,8 +17,8 @@ public class Estimation {
     private Long id;
     private double distance;
     private double estimatedFee;
-    private double estimatedDeliveryTime;
-    private double estimatedPickUpTime;
+    private Duration estimatedDeliveryTime;
+    private Duration estimatedPickUpTime;
 
     @Column(unique = true)
     private String uuid;

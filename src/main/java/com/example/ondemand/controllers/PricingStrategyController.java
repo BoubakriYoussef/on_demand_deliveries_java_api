@@ -39,9 +39,14 @@ public class PricingStrategyController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<PricingStrategy>> getAllPricingStrategies() {
-        List<PricingStrategy> pricingStrategies = pricingStrategyService.getAllPricingStrategies();
-        return ResponseEntity.ok(pricingStrategies);
+    public List<PricingStrategy> getAllPricingStrategies() {
+        return pricingStrategyService.getAllPricingStrategies();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<PricingStrategy> getPricingStrategyById(@PathVariable Long id) {
+        Optional<PricingStrategy> pricingStrategy = pricingStrategyService.getPricingStrategyById(id);
+        return pricingStrategy;
     }
 
     @DeleteMapping("/{id}")

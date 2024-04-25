@@ -1,9 +1,8 @@
 package com.example.ondemand.service;
 
-import com.example.ondemand.auth.AuthenticationResponse;
-import com.example.ondemand.auth.UpdateUserRequest;
+import com.example.ondemand.authentication.AuthRequest.AuthenticationResponse;
+import com.example.ondemand.authentication.AuthRequest.UpdateUserRequest;
 import com.example.ondemand.entities.User;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;

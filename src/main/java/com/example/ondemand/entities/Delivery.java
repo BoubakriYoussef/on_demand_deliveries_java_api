@@ -1,12 +1,11 @@
 package com.example.ondemand.entities;
 
+import com.example.ondemand.EnumClass.PaymentMethod;
+import com.example.ondemand.EnumClass.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,12 +15,9 @@ public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private enum status {
-        UNASSIGNED, ASSIGNED, RECUPERATED, DELIVERED
-    }
-    private Date orderTime;
-    private Date deliveryTime;
-    private enum paymentMethod {CASH,CREDIT_CARD};
+    private Status status;
+
+    private PaymentMethod paymentMethod;
     @Column(unique = true)
     private String uuid;
     @OneToOne

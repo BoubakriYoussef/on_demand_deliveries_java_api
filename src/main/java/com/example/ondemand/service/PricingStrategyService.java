@@ -13,4 +13,6 @@ public interface PricingStrategyService {
     List<PricingStrategy> getAllPricingStrategies();
     void deletePricingStrategy(Long id);
     PricingStrategy updatePricingStrategy(Long id, NewPriceStrategyRequest request);
+
+    Optional<PricingStrategy> getPricingStrategyById(Long id);
 }

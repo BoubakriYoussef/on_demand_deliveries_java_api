@@ -1,4 +1,4 @@
-package com.example.ondemand.auth;
+package com.example.ondemand.dto.EstimationRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
-
+public class CustomerRequest {
+    private String name;
     private String email;
-    private String password;
+    private String phoneNB;
+    private AddressRequest addressRequest;
+
 }

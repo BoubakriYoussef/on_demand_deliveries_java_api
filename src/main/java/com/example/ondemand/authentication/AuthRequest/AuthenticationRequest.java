@@ -1,5 +1,4 @@
-package com.example.ondemand.auth;
-
+package com.example.ondemand.authentication.AuthRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
+public class AuthenticationRequest {
 
-
-    // Token that will be sent to the user
-    private String token;
+    private String email;
+    private String password;
 }
