@@ -1,8 +1,7 @@
 package com.example.ondemand.controllers;
 
-import com.example.ondemand.dto.NewPriceStrategyRequest;
+import com.example.ondemand.request.NewPriceStrategyRequest;
 import com.example.ondemand.entities.PricingStrategy;
-import com.example.ondemand.entities.User;
 import com.example.ondemand.repositories.UserRepository;
 import com.example.ondemand.service.PricingStrategyService;
 import com.example.ondemand.service.UserService;
@@ -10,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 

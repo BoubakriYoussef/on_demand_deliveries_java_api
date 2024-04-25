@@ -1,7 +1,7 @@
 package com.example.ondemand.service;
 
-import com.example.ondemand.authentication.AuthRequest.AuthenticationResponse;
-import com.example.ondemand.authentication.AuthRequest.UpdateUserRequest;
+import com.example.ondemand.authentication.authRequest.AuthenticationResponse;
+import com.example.ondemand.authentication.authRequest.UpdateUserRequest;
 import com.example.ondemand.entities.User;
 
 import java.util.List;

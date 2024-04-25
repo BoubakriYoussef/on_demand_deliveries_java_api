@@ -1,8 +1,8 @@
 package com.example.ondemand.service.serviceImpl;
 
-import com.example.ondemand.authentication.AuthService.AuthenticationService;
-import com.example.ondemand.dto.availabilityRequest.NewAvailabilityRequest;
-import com.example.ondemand.dto.availabilityRequest.NewTimeRequest;
+import com.example.ondemand.authentication.authService.AuthenticationService;
+import com.example.ondemand.request.availabilityRequest.NewAvailabilityRequest;
+import com.example.ondemand.request.availabilityRequest.NewTimeRequest;
 import com.example.ondemand.entities.Availability;
 import com.example.ondemand.entities.Day;
 import com.example.ondemand.entities.Time;

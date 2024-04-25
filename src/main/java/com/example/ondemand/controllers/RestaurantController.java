@@ -1,8 +1,8 @@
 package com.example.ondemand.controllers;
 
 
-import com.example.ondemand.dto.restaurantRequest.AddRestaurantAddressRequest;
-import com.example.ondemand.dto.restaurantRequest.UpdateRestaurantRequest;
+import com.example.ondemand.request.restaurantRequest.AddRestaurantAddressRequest;
+import com.example.ondemand.request.restaurantRequest.UpdateRestaurantRequest;
 import com.example.ondemand.entities.Restaurant;
 import com.example.ondemand.entities.User;
 import com.example.ondemand.repositories.RestaurantRepository;

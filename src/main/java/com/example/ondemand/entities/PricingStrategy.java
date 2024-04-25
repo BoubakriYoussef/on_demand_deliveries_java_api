@@ -1,6 +1,6 @@
 package com.example.ondemand.entities;
 
-import com.example.ondemand.EnumClass.UnitOfMeasure;
+import com.example.ondemand.enumClass.UnitOfMeasure;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.example.ondemand.service.serviceImpl;
 
-import com.example.ondemand.dto.NewPriceStrategyRequest;
+import com.example.ondemand.request.NewPriceStrategyRequest;
 import com.example.ondemand.entities.PricingStrategy;
 import com.example.ondemand.repositories.PricingStrategyRepository;
 import com.example.ondemand.service.PricingStrategyService;

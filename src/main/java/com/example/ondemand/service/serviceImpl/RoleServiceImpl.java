@@ -1,6 +1,6 @@
 package com.example.ondemand.service.serviceImpl;
 
-import com.example.ondemand.dto.RoleRequest;
+import com.example.ondemand.request.RoleRequest;
 import com.example.ondemand.entities.Role;
 import com.example.ondemand.repositories.RoleRepository;
 import com.example.ondemand.service.RoleService;

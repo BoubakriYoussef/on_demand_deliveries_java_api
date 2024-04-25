@@ -1,7 +1,7 @@
 package com.example.ondemand.entities;
 
-import com.example.ondemand.EnumClass.PaymentMethod;
-import com.example.ondemand.EnumClass.Status;
+import com.example.ondemand.enumClass.PaymentMethod;
+import com.example.ondemand.enumClass.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
