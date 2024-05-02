@@ -1,21 +1,32 @@
 package com.example.ondemand.service.serviceImpl;
 
+
+import com.example.ondemand.enumClass.UnitOfMeasure;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.example.ondemand.authentication.authService.AuthenticationService;
 import com.example.ondemand.enumClass.PaymentMethod;
 import com.example.ondemand.enumClass.Status;
 import com.example.ondemand.request.EstimationRequest.*;
 import com.example.ondemand.entities.*;
 import com.example.ondemand.repositories.*;
-import com.example.ondemand.request.restaurantRequest.UpdateRestaurantRequest;
 import com.example.ondemand.service.EstimationService;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -51,10 +62,147 @@ public class EstimationServiceImpl implements EstimationService {
     private TipRepository tipRepository;
 
 
+    @Autowired
+    private RateRepository rateRepository;
+
+    private static final String key = "5b3ce3597851110001cf6248eb36aaad5afb41909b627fc97e724c15";
+
+
+    // Calcul de la distance entre Customer & Restaurant en utilisant lat et long de la requête NewEstimationRequest
+    @Override
+    public double calculateRoadDistance(NewEstimationRequest newEstimationRequest) throws JsonProcessingException, JsonMappingException {
+
+        // Construction de l'URL de la requête
+        String url = "https://api.openrouteservice.org/v2/directions/driving-car?api_key=" + key
+                + "&start=" + newEstimationRequest.getCustomerLongitude() + "," + newEstimationRequest.getCustomerLatitude()
+                + "&end=" + newEstimationRequest.getRestaurantLongitude() + "," + newEstimationRequest.getRestaurantLatitude();
+
+
+        // Envoi de la requête HTTP get
+        RestTemplate restTemplate = new RestTemplate();
+        String response = restTemplate.getForObject(url, String.class);
+
+        // Parse de la reponse JSON pour extraire la distance
+        JsonNode root = new ObjectMapper().readTree(response);
+        double distance = root.at("/features/0/properties/segments/0/distance").asDouble();
+
+        return distance/1000.0;
+    }
+
+    // Estimer le prix de livraison de la commande
+
+    @Override
+    public double estimateDeliveryFee(NewEstimationRequest newEstimationRequest) throws JsonProcessingException {
+
+        //Calculate distance using calculateRoadDistance method
+        double distance = calculateRoadDistance(newEstimationRequest);
+
+        //Recuperate pricing strategy with her fields
+        PricingStrategy pricingStrategy = pricingStrategyRepository.findByName(newEstimationRequest.getPricingStrategyName());
+
+        UnitOfMeasure unitOfMeasure = pricingStrategy.getUnitOfMeasure();
+
+        double deliveryFeePerMile  = pricingStrategy.getDeliveryFeePerMile();
+
+        double deliveryFeePerKilometer = pricingStrategy.getDeliveryFeePerKilometer();
+
+        double serviceFee = pricingStrategy.getServiceFee();
+
+        double tva = pricingStrategy.getTva();
+
+        double minimalFee = pricingStrategy.getMinimalFee();
+
+
+        double minimalDistance = pricingStrategy.getMinimalDistance() ;
+
+        double estimatedFee= 0;
+
+        if(unitOfMeasure == unitOfMeasure.KM){
+            double k = (distance - minimalDistance) * deliveryFeePerKilometer;
+            estimatedFee = k + minimalFee + tva + serviceFee;
+        }
+        else if(unitOfMeasure == unitOfMeasure.MILE) {
+            double m = (distance - minimalDistance) * deliveryFeePerMile;
+            estimatedFee = m + minimalFee + tva + serviceFee;
+        }
+
+        return estimatedFee;
+
+    }
+
+
+    //Estimer le temps de livraison si l'ORDER est instantané
+
+    @Override
+    public LocalDateTime estimateDeliveryTime(NewEstimationRequest newEstimationRequest) throws JsonProcessingException {
+
+        //Order Time
+        LocalDateTime orderTime = newEstimationRequest.getOrderTime();
+
+        //ORDER TYPE
+        OrderType orderType = newEstimationRequest.getOrderType();
+
+        //PREPARATION
+        double preparationTime = 0.25;
+
+        //DISTANCE
+        double distance = calculateRoadDistance(newEstimationRequest);
+
+
+        //Vitesse moyenne du livreur sur la moto
+        double driverAverageSpeed = 40.0;
+
+        double duration = 0;
+
+        //INSTANT ORDER
+        //0.08 heures pour les retards imprévus
+        if (orderType == OrderType.INSTANT) {
+            double drivingTime = distance / driverAverageSpeed;
+            duration = drivingTime + preparationTime + 0.08;
+        }
+
+
+        //Conversion de duration en long
+        LocalDateTime estimatedDeliveryTime = orderTime.plusHours((long) duration);
+
+        return estimatedDeliveryTime;
+    }
+
+
+
+    //Estimer le temps de récupération si l'ORDER est plannifié
+    @Override
+    public LocalDateTime estimatePickUpTime(NewEstimationRequest newEstimationRequest) throws JsonProcessingException {
+        //Order Time
+        LocalDateTime orderTime = newEstimationRequest.getOrderTime();
+
+        //Order Type
+        OrderType orderType = newEstimationRequest.getOrderType();
+
+        double distance = calculateRoadDistance(newEstimationRequest);
+
+        LocalDateTime requestedDeliveryTime = newEstimationRequest.getRequestedDeliveryTime();
+
+        double drivingTime = 0.0;
+
+        double averageSpeed = 40.0;
+
+        LocalDateTime estimatedPickUpTime = null;
+
+        if(orderType == OrderType.PLANNED){
+            drivingTime = distance / averageSpeed ;
+            estimatedPickUpTime = requestedDeliveryTime.minusHours((long) (drivingTime * 60));
+            return estimatedPickUpTime;
+        }
+        return estimatedPickUpTime;
+
+    }
+
+
     //Créer Estimation
 
     @Override
-    public Estimation createEstimation(NewEstimationRequest request) {
+    public Estimation createEstimation(NewEstimationRequest request) throws JsonProcessingException {
         // Get Authenticated user
         User authenticatedUser = authenticationService.getAuthenticatedUser();
 
@@ -80,7 +228,7 @@ public class EstimationServiceImpl implements EstimationService {
 
         // Create new Order
         Orders order = createOrder(request.getOrderAmount(), request.getOrderDescr(),
-                request.getOrderTime(), customer);
+                request.getOrderTime(), request.getRequestedDeliveryTime(), customer);
 
         // Create new Tip
         Tip tip = createTip(request.getTipAmount());
@@ -89,13 +237,19 @@ public class EstimationServiceImpl implements EstimationService {
         Payment payment = createPayment(request.getPaymentAmount(), request.getPaymentTime(),
                 request.getTotalValue(), request.isWithdrawDone(), tip);
 
+        //Create User
+        User user = new User();
+
+        //Create Rate
+        Rate rate = createRate(request.getRating(), request.getCommentary(), request.getEvaluatedAt(), request.getUpdatedAt());
+
         // Create new Delivery
-        Delivery delivery = createDelivery(request.getDeliveryStatus(), request.getDeliveryPaymentMethod(), order);
+        Delivery delivery = createDelivery(request.getDeliveryStatus(), request.getDeliveryPaymentMethod(), order, user, rate);
+
+
 
         // Create new Estimation
-        Estimation estimation = createEstimation(request.getDistance(), request.getEstimatedFee(),
-                request.getEstimatedDeliveryTime(), request.getEstimatedPickUpTime(), pricingStrategy,
-                delivery, restaurant);
+        Estimation estimation = createEstimation(pricingStrategy,delivery,restaurant,request);
 
         return estimationRepository.save(estimation);
     }
@@ -118,21 +272,33 @@ public class EstimationServiceImpl implements EstimationService {
 
     //update estimation
     @Override
-    public Estimation updateEstimation(Long estimationId, UpdateEstimationRequest request) {
+    public Estimation updateEstimation(Long estimationId, NewEstimationRequest request) throws JsonProcessingException {
         // Retrieve the estimation from the database
         Estimation estimation = estimationRepository.findById(estimationId)
                 .orElseThrow(() -> new EntityNotFoundException("Estimation not found with id: " + estimationId));
 
+
+        double distance = calculateRoadDistance(request);
+
+        double estimatedFee = estimateDeliveryFee(request);
+
+        LocalDateTime estimatedDeliveryTime = estimateDeliveryTime(request);
+
+        LocalDateTime estimatedPickUpTime = estimatePickUpTime(request);
+
+
         // Update the estimation properties
-        estimation.setDistance(request.getDistance());
-        estimation.setEstimatedFee(request.getEstimatedFee());
-        estimation.setEstimatedDeliveryTime(request.getEstimatedDeliveryTime());
-        estimation.setEstimatedPickUpTime(request.getEstimatedPickUpTime());
+        estimation.setDistance(distance);
+        estimation.setEstimatedFee(estimatedFee);
+        estimation.setEstimatedDeliveryTime(estimatedDeliveryTime);
+        estimation.setEstimatedPickUpTime(estimatedPickUpTime);
+        estimation.setUuid(UUID.randomUUID().toString());
 
         // Update related entities if needed
         Delivery delivery = estimation.getDelivery();
         delivery.setStatus(request.getDeliveryStatus());
         delivery.setPaymentMethod(request.getDeliveryPaymentMethod());
+        delivery.setUser(null);
 
         Payment payment = delivery.getOrders().getDelivery().getPayment();
         payment.setPaymentAmount(request.getPaymentAmount());
@@ -188,6 +354,7 @@ public class EstimationServiceImpl implements EstimationService {
     }
 
 
+
     // Create Address object
     private Address createAddress(String building, String street, String floor, String additionalInfos,
                                   String landmark, double latitude, double longitude) {
@@ -199,6 +366,7 @@ public class EstimationServiceImpl implements EstimationService {
         address.setLandmark(landmark);
         address.setLatitude(latitude);
         address.setLongitude(longitude);
+        address.setUuid(UUID.randomUUID().toString());
         return addressRepository.save(address);
     }
 
@@ -211,6 +379,7 @@ public class EstimationServiceImpl implements EstimationService {
             restaurant.setPhoneNumber(phoneNumber);
             restaurant.setAddress(address);
             restaurant.setUser(authenticatedUser);
+            restaurant.setUuid(UUID.randomUUID().toString());
             return restaurantRepository.save(restaurant);
         }
         return restaurant;
@@ -227,47 +396,94 @@ public class EstimationServiceImpl implements EstimationService {
     }
 
     // Create Order object
-    private Orders createOrder(double orderAmount, String orderDescr, LocalDateTime orderTime, Customer customer) {
+    private Orders createOrder(double orderAmount, String orderDescr, LocalDateTime orderTime, LocalDateTime requestedDeliveryTime,Customer customer) {
         Orders order = new Orders();
         order.setOrderAmount(orderAmount);
         order.setOrderDescription(orderDescr);
         order.setOrderTime(orderTime);
+        order.setRequestedDeliveryTime(requestedDeliveryTime);
         order.setCustomer(customer);
+        order.setUuid(UUID.randomUUID().toString());
         return orderRepository.save(order);
     }
+
 
     // Create Tip object
     private Tip createTip(double tipAmount) {
         Tip tip = new Tip();
         tip.setTipAmount(tipAmount);
+        // You can set other fields of Tip here if needed
+        tip.setUuid(UUID.randomUUID().toString());
         return tipRepository.save(tip);
     }
 
     // Create Payment object
     private Payment createPayment(double paymentAmount, LocalDateTime paymentTime, double totalValue,
                                   boolean isWithdrawDone, Tip tip) {
+
         Payment payment = new Payment();
         payment.setPaymentAmount(paymentAmount);
         payment.setPaymentTime(paymentTime);
         payment.setTotalValue(totalValue);
         payment.setWithdrawDone(isWithdrawDone);
-        payment.setTip(tip);
+
+        // Check if the tip is null or if all fields of the tip are empty
+        if (tip == null || tip.getTipAmount() == 0 /* add other fields checks */) {
+            // If tip is null or all fields are empty, set payment's tip to null
+            payment.setTip(null);
+        } else {
+            // If tip is not null or has some valid data, associate it with the payment
+            payment.setTip(tip);
+        }
+
+        payment.setUuid(UUID.randomUUID().toString());
+
+        // Save payment only if it contains valid data
         return paymentRepository.save(payment);
     }
 
+
+
     // Create Delivery object
-    private Delivery createDelivery(Status status, PaymentMethod paymentMethod, Orders order) {
+    private Delivery createDelivery(Status status, PaymentMethod paymentMethod, Orders order, User user, Rate rate) {
         Delivery delivery = new Delivery();
         delivery.setStatus(status);
         delivery.setPaymentMethod(paymentMethod);
         delivery.setOrders(order);
+        delivery.setRate(rate);
+
+        // Check if the user is null or not
+        if (user != null) {
+            delivery.setUser(user);
+        } else {
+            // Create a new user with empty fields or null values
+            User emptyUser = new User();
+            // Set default values or leave fields empty as per your application's requirements
+            emptyUser.setFirstName("");
+            emptyUser.setEmail("");
+            emptyUser.setPhone("");
+
+            // Associate the empty user with the delivery
+            delivery.setUser(emptyUser);
+        }
+
+        delivery.setUuid(UUID.randomUUID().toString());
+
         return deliveryRepository.save(delivery);
     }
 
+
     // Create Estimation object
-    private Estimation createEstimation(double distance, double estimatedFee, Duration estimatedDeliveryTime,
-                                        Duration estimatedPickUpTime, PricingStrategy pricingStrategy,
-                                        Delivery delivery, Restaurant restaurant) {
+    public Estimation createEstimation(PricingStrategy pricingStrategy, Delivery delivery, Restaurant restaurant, NewEstimationRequest newEstimationRequest) throws JsonProcessingException, JsonMappingException {
+
+        double distance = calculateRoadDistance(newEstimationRequest);
+
+        double estimatedFee = estimateDeliveryFee(newEstimationRequest);
+
+        LocalDateTime estimatedDeliveryTime = estimateDeliveryTime(newEstimationRequest);
+
+        LocalDateTime estimatedPickUpTime = estimatePickUpTime(newEstimationRequest);
+
         Estimation estimation = new Estimation();
         estimation.setDistance(distance);
         estimation.setEstimatedFee(estimatedFee);
@@ -279,30 +495,13 @@ public class EstimationServiceImpl implements EstimationService {
         return estimation;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public Rate createRate(double rating, String commentary, LocalDateTime evaluatedAt, LocalDateTime updatedAt){
+        Rate rate = new Rate();
+        rate.setRating(rating);
+        rate.setCommentary(commentary);
+        rate.setEvaluatedAt(evaluatedAt);
+        rate.setUpdatedAt(updatedAt);
+        rate.setUuid(UUID.randomUUID().toString());
+        return rateRepository.save(rate);
+    }
 }

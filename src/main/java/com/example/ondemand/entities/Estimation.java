@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -17,8 +18,8 @@ public class Estimation {
     private Long id;
     private double distance;
     private double estimatedFee;
-    private Duration estimatedDeliveryTime;
-    private Duration estimatedPickUpTime;
+    private LocalDateTime estimatedDeliveryTime;
+    private LocalDateTime estimatedPickUpTime;
 
     @Column(unique = true)
     private String uuid;

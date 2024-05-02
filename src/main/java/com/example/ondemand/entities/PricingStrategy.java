@@ -23,6 +23,10 @@ public class PricingStrategy {
     private double deliveryFeePerMile;
     private double deliveryFeePerKilometer;
     private double serviceFee;
+    private double minimalFee;
+
+    private double minimalDistance;
+    private double tva;
 
     @Column(unique = true)
     private String uuid;

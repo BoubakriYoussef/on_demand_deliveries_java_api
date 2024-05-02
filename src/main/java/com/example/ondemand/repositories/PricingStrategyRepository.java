@@ -13,6 +13,5 @@ public interface PricingStrategyRepository extends JpaRepository<PricingStrategy
 
     Optional<PricingStrategy> findPricingStrategiesById(Long id);
 
-
     void deleteById(Long id);
 }

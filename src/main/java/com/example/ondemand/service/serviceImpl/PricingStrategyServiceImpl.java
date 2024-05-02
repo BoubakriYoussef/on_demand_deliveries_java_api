@@ -25,6 +25,8 @@ public class PricingStrategyServiceImpl implements PricingStrategyService {
             pricingStrategy.setDeliveryFeePerMile(request.getDeliveryFeePerMile());
             pricingStrategy.setDeliveryFeePerKilometer(request.getDeliveryFeePerKilometer());
             pricingStrategy.setServiceFee(request.getServiceFee());
+            pricingStrategy.setTva(request.getTva());
+            pricingStrategy.setMinimalFee(request.getMinimalFee());
 
             return pricingStrategyRepository.save(pricingStrategy);
 
@@ -49,6 +51,8 @@ public class PricingStrategyServiceImpl implements PricingStrategyService {
         pricingStrategy.setDeliveryFeePerMile(request.getDeliveryFeePerMile());
         pricingStrategy.setDeliveryFeePerKilometer(request.getDeliveryFeePerKilometer());
         pricingStrategy.setServiceFee(request.getServiceFee());
+        pricingStrategy.setMinimalFee(request.getMinimalFee());
+        pricingStrategy.setTva(request.getTva());
         return pricingStrategyRepository.save(pricingStrategy);
     }
 

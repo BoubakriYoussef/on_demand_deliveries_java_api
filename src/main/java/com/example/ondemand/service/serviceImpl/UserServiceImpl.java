@@ -3,12 +3,18 @@ package com.example.ondemand.service.serviceImpl;
 import com.example.ondemand.authentication.authRequest.AuthenticationResponse;
 import com.example.ondemand.authentication.authService.AuthenticationService;
 import com.example.ondemand.authentication.authRequest.UpdateUserRequest;
+import com.example.ondemand.entities.Restaurant;
+import com.example.ondemand.repositories.RestaurantRepository;
 import com.example.ondemand.securityConfiguration.JwtService;
 import com.example.ondemand.repositories.UserRepository;
 import com.example.ondemand.entities.User;
 import com.example.ondemand.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     // Find User By Id
     @Override
@@ -84,6 +93,9 @@ public class UserServiceImpl implements UserService {
     public List<User> getUserByRole(String roleName) {
             return userRepository.findByRole_Name(roleName);
     }
+
+
+
     public ResponseEntity<Optional<User>> findByUsername(String username) {
         return ResponseEntity.ok(userRepository.findByEmail(username));
     }

@@ -9,12 +9,15 @@ import com.example.ondemand.repositories.RestaurantRepository;
 import com.example.ondemand.repositories.UserRepository;
 import com.example.ondemand.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/restaurant")
@@ -51,16 +54,14 @@ public class RestaurantController {
     }
 
 
-    //Afficher restaurant par user Id
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Restaurant> getRestaurantsByUser(@PathVariable Long userId) {
-        // Suppose you have a way to retrieve the User object by userId
-        User user = userRepository.findById(userId)
-                .orElseThrow();
-
-
-        Restaurant restaurant = restaurantService.getRestaurantsByUser(user);
-        return ResponseEntity.ok(restaurant);
+    @GetMapping("/current")
+    public ResponseEntity<?> getRestaurantsByCurrentUser() {
+        try {
+            Restaurant restaurant = restaurantService.getRestaurantsByCurrentUser();
+            return ResponseEntity.ok().body(restaurant);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get restaurants: " + e.getMessage());
+        }
     }
 
 

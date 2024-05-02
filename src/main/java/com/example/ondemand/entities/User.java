@@ -2,6 +2,7 @@ package com.example.ondemand.entities;
 
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -41,6 +42,7 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String uuid;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Availability> availabilities;
     @ManyToOne
     private Role role;

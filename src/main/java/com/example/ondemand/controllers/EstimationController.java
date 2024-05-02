@@ -6,6 +6,7 @@ import com.example.ondemand.entities.User;
 import com.example.ondemand.request.EstimationRequest.*;
 import com.example.ondemand.entities.Estimation;
 import com.example.ondemand.service.EstimationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class EstimationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/add")
-    public ResponseEntity<Estimation> createEstimation(@RequestBody NewEstimationRequest request) {
+    public ResponseEntity<Estimation> createEstimation(@RequestBody NewEstimationRequest request) throws JsonProcessingException {
         Estimation estimation = estimationService.createEstimation(request);
         return ResponseEntity.ok(estimation);
     }
@@ -46,7 +47,7 @@ public class EstimationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Estimation> updateEstimation(Long id, @RequestBody UpdateEstimationRequest request){
+    public ResponseEntity<Estimation> updateEstimation(Long id, @RequestBody NewEstimationRequest request) throws JsonProcessingException {
         Estimation updatedEstimation = estimationService.updateEstimation(id, request);
         return new ResponseEntity<>(updatedEstimation, HttpStatus.OK);
     }

@@ -30,4 +30,7 @@ public class Delivery {
 
     @OneToOne
     private Payment payment;
+
+    @OneToOne(mappedBy = "delivery")
+    private Rate rate;
 }

@@ -9,6 +9,7 @@ import com.example.ondemand.request.EstimationRequest.NewEstimationRequest;
 import com.example.ondemand.request.restaurantRequest.AddRestaurantAddressRequest;
 import com.example.ondemand.request.restaurantRequest.UpdateRestaurantRequest;
 import com.example.ondemand.service.RestaurantService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,10 +19,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
 @Service
+@Transactional
 public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
@@ -67,9 +70,18 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantRepository.save(restaurant);
     }
 
+
+
     @Override
-    public Restaurant getRestaurantsByUser(User user) {
-        return restaurantRepository.findByUser(user);
+    public Restaurant getRestaurantsByCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String username = userDetails.getUsername();
+
+        User currentUser = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found in the database"));
+
+        return restaurantRepository.findByUser(currentUser);
     }
 
 

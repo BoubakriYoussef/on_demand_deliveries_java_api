@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -17,13 +18,14 @@ public class Rate {
     private Long id;
     private double rating;
     private String commentary;
-    private Date evaluatedAt;
-    private Date updatedAt;
+    private LocalDateTime evaluatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(unique = true)
     private String uuid;
     @ManyToOne
     private User user;
+
     @OneToOne
     private Delivery delivery;
 }

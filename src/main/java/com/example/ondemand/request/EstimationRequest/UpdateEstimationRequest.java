@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Duration;
+import java.sql.Time;
 import java.time.LocalDateTime;
 
 
@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 public class UpdateEstimationRequest {
     private double distance;
     private double estimatedFee;
-    private Duration estimatedDeliveryTime;
-    private Duration estimatedPickUpTime;
+    private LocalDateTime estimatedDeliveryTime;
+    private LocalDateTime estimatedPickUpTime;
     private String pricingStrategyName;
 
     // Champs pour l'adresse du restaurant

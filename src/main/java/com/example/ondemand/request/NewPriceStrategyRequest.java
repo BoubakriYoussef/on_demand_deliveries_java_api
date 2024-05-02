@@ -20,6 +20,9 @@ public class NewPriceStrategyRequest {
     private double deliveryFeePerMile;
     private double deliveryFeePerKilometer;
     private double serviceFee;
+    private double minimalDistance;
+    private double minimalFee;
+    private double tva;
 
     public boolean isNamePresent(){
         return name != null;
@@ -39,6 +42,14 @@ public class NewPriceStrategyRequest {
 
     public boolean isServiceFeePresent(){
         return serviceFee != 0;
+    }
+
+    public boolean isMinimalDistancePresent(){
+        return minimalDistance != 0;
+    }
+
+    public boolean isTvaPresent(){
+        return tva != 0;
     }
 
     public UnitOfMeasure getUnitOfMeasure() {

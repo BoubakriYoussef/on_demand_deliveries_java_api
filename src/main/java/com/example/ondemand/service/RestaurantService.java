@@ -5,11 +5,13 @@ import com.example.ondemand.request.restaurantRequest.UpdateRestaurantRequest;
 import com.example.ondemand.entities.Restaurant;
 import com.example.ondemand.entities.User;
 
+import java.util.List;
+
 public interface RestaurantService {
 
     Restaurant addRestaurant(AddRestaurantAddressRequest addRestaurantAddressRequest, User manager);
 
-    Restaurant getRestaurantsByUser(User user);
+    Restaurant getRestaurantsByCurrentUser();
 
     void deleteRestaurant(Long restaurantId, User user);
 

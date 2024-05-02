@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.security.PrivateKey;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Data
@@ -23,6 +24,8 @@ public class Orders {
     private String orderDescription;
 
     private LocalDateTime orderTime;
+
+    private LocalDateTime requestedDeliveryTime;
 
 
     @Column(unique = true)
