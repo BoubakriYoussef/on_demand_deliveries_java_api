@@ -19,4 +19,6 @@ public interface UserService {
     AuthenticationResponse updateUser(UpdateUserRequest request, Long userId);
 
     List<User> getUserByRole(String roleName);
+
+    List<User> findAvailableDrivers();
 }

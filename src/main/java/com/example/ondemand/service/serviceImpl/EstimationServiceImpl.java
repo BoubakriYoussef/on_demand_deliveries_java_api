@@ -1,6 +1,7 @@
 package com.example.ondemand.service.serviceImpl;
 
 
+import com.example.ondemand.enumClass.EstimationStatus;
 import com.example.ondemand.enumClass.UnitOfMeasure;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -65,6 +66,7 @@ public class EstimationServiceImpl implements EstimationService {
     @Autowired
     private RateRepository rateRepository;
 
+    //OpenRouteService API KEY to calculate distance between customer & restaurant
     private static final String key = "5b3ce3597851110001cf6248eb36aaad5afb41909b627fc97e724c15";
 
 
@@ -231,20 +233,17 @@ public class EstimationServiceImpl implements EstimationService {
                 request.getOrderTime(), request.getRequestedDeliveryTime(), customer);
 
         // Create new Tip
-        Tip tip = createTip(request.getTipAmount());
+        Tip tip = createTip();
 
         // Create new Payment
-        Payment payment = createPayment(request.getPaymentAmount(), request.getPaymentTime(),
-                request.getTotalValue(), request.isWithdrawDone(), tip);
+        Payment payment = createPayment(tip);
 
-        //Create User
-        User user = new User();
 
         //Create Rate
-        Rate rate = createRate(request.getRating(), request.getCommentary(), request.getEvaluatedAt(), request.getUpdatedAt());
+        Rate rate = createRate();
 
         // Create new Delivery
-        Delivery delivery = createDelivery(request.getDeliveryStatus(), request.getDeliveryPaymentMethod(), order, user, rate);
+        Delivery delivery = createDelivery(request.getDeliveryStatus(), request.getDeliveryPaymentMethod(), order,rate);
 
 
 
@@ -298,7 +297,7 @@ public class EstimationServiceImpl implements EstimationService {
         Delivery delivery = estimation.getDelivery();
         delivery.setStatus(request.getDeliveryStatus());
         delivery.setPaymentMethod(request.getDeliveryPaymentMethod());
-        delivery.setUser(null);
+
 
         Payment payment = delivery.getOrders().getDelivery().getPayment();
         payment.setPaymentAmount(request.getPaymentAmount());
@@ -351,6 +350,29 @@ public class EstimationServiceImpl implements EstimationService {
     @Override
     public Optional<Estimation> findEstimationById(Long id) {
         return estimationRepository.findById(id);
+    }
+
+
+    //Update Estimation status based on Manager Accepting or Refusing the Estimated Fee
+    @Override
+    public Estimation updateForAcceptOrRefuseEstimation(Long estimationId, ManagerDecisionRequest decisionRequest) {
+        // Récupérer l'estimation depuis la base de données
+        Estimation estimation = estimationRepository.findById(estimationId)
+                .orElseThrow(() -> new EntityNotFoundException("Estimation not found with id: " + estimationId));
+
+        // Mettre à jour l'estimation en fonction de la décision du manager
+        if (decisionRequest.isManagerDecision()) {
+            // Si le manager a accepté l'estimation, mettez à jour le statut en conséquence
+            estimation.setEstimationStatus(EstimationStatus.ACCEPTED);
+            // D'autres actions peuvent être effectuées ici, comme l'assignation d'un conducteur, etc.
+        } else {
+            // Si le manager a refusé l'estimation, mettez à jour le statut en conséquence
+            estimation.setEstimationStatus(EstimationStatus.REFUSED);
+            // D'autres actions peuvent être effectuées ici, comme un nettoyage supplémentaire, etc.
+        }
+
+        // Sauvegarder et retourner l'estimation mise à jour
+        return estimationRepository.save(estimation);
     }
 
 
@@ -409,32 +431,22 @@ public class EstimationServiceImpl implements EstimationService {
 
 
     // Create Tip object
-    private Tip createTip(double tipAmount) {
+    private Tip createTip() {
         Tip tip = new Tip();
-        tip.setTipAmount(tipAmount);
+        tip.setTipAmount(0.0);
         // You can set other fields of Tip here if needed
         tip.setUuid(UUID.randomUUID().toString());
         return tipRepository.save(tip);
     }
 
     // Create Payment object
-    private Payment createPayment(double paymentAmount, LocalDateTime paymentTime, double totalValue,
-                                  boolean isWithdrawDone, Tip tip) {
-
+    private Payment createPayment(Tip tip) {
         Payment payment = new Payment();
-        payment.setPaymentAmount(paymentAmount);
-        payment.setPaymentTime(paymentTime);
-        payment.setTotalValue(totalValue);
-        payment.setWithdrawDone(isWithdrawDone);
-
-        // Check if the tip is null or if all fields of the tip are empty
-        if (tip == null || tip.getTipAmount() == 0 /* add other fields checks */) {
-            // If tip is null or all fields are empty, set payment's tip to null
-            payment.setTip(null);
-        } else {
-            // If tip is not null or has some valid data, associate it with the payment
-            payment.setTip(tip);
-        }
+        payment.setPaymentAmount(0.0);
+        payment.setPaymentTime(null);
+        payment.setTotalValue(0.0);
+        payment.setWithdrawDone(false);
+        payment.setTip(tip);
 
         payment.setUuid(UUID.randomUUID().toString());
 
@@ -443,29 +455,14 @@ public class EstimationServiceImpl implements EstimationService {
     }
 
 
-
     // Create Delivery object
-    private Delivery createDelivery(Status status, PaymentMethod paymentMethod, Orders order, User user, Rate rate) {
+    private Delivery createDelivery(Status status, PaymentMethod paymentMethod, Orders order, Rate rate) {
         Delivery delivery = new Delivery();
         delivery.setStatus(status);
         delivery.setPaymentMethod(paymentMethod);
         delivery.setOrders(order);
         delivery.setRate(rate);
 
-        // Check if the user is null or not
-        if (user != null) {
-            delivery.setUser(user);
-        } else {
-            // Create a new user with empty fields or null values
-            User emptyUser = new User();
-            // Set default values or leave fields empty as per your application's requirements
-            emptyUser.setFirstName("");
-            emptyUser.setEmail("");
-            emptyUser.setPhone("");
-
-            // Associate the empty user with the delivery
-            delivery.setUser(emptyUser);
-        }
 
         delivery.setUuid(UUID.randomUUID().toString());
 
@@ -495,12 +492,12 @@ public class EstimationServiceImpl implements EstimationService {
         return estimation;
     }
 
-    public Rate createRate(double rating, String commentary, LocalDateTime evaluatedAt, LocalDateTime updatedAt){
+    public Rate createRate(){
         Rate rate = new Rate();
-        rate.setRating(rating);
-        rate.setCommentary(commentary);
-        rate.setEvaluatedAt(evaluatedAt);
-        rate.setUpdatedAt(updatedAt);
+        rate.setRating(0.0);
+        rate.setCommentary("");
+        rate.setEvaluatedAt(null);
+        rate.setUpdatedAt(null);
         rate.setUuid(UUID.randomUUID().toString());
         return rateRepository.save(rate);
     }

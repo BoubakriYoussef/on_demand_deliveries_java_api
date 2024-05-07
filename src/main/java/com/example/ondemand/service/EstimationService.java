@@ -21,6 +21,8 @@ public interface EstimationService {
 
      Estimation updateEstimation(Long estimationId, NewEstimationRequest request) throws JsonProcessingException;
 
+     Estimation updateForAcceptOrRefuseEstimation(Long estimationId, ManagerDecisionRequest decisionRequest);
+
 
      Optional<Estimation> findEstimationById(Long id);
 

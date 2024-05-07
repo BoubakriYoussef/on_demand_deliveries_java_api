@@ -1,4 +1,4 @@
-package com.example.ondemand.request;
+package com.example.ondemand.request.PriceStrategyRequest;
 
 
 import com.example.ondemand.enumClass.UnitOfMeasure;

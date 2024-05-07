@@ -39,7 +39,7 @@ public class OndemandApplication implements CommandLineRunner {
             dayRepository.save(day);
         }
 
-        String[] roles = {"admin","driver","manager"};
+        String[] roles = {"ADMIN","DRIVER","MANAGER"};
         for(i=0;i<3;i++) {
             Role role = new Role();
             role.setName(roles[i]);

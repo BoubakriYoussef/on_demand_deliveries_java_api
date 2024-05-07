@@ -1,6 +1,6 @@
 package com.example.ondemand.controllers;
 
-import com.example.ondemand.request.NewPriceStrategyRequest;
+import com.example.ondemand.request.PriceStrategyRequest.NewPriceStrategyRequest;
 import com.example.ondemand.entities.PricingStrategy;
 import com.example.ondemand.repositories.UserRepository;
 import com.example.ondemand.service.PricingStrategyService;

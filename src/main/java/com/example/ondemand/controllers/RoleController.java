@@ -1,7 +1,7 @@
 package com.example.ondemand.controllers;
 
 
-import com.example.ondemand.request.RoleRequest;
+import com.example.ondemand.request.RoleRequest.RoleRequest;
 import com.example.ondemand.entities.Role;
 import com.example.ondemand.repositories.RoleRepository;
 import com.example.ondemand.service.RoleService;

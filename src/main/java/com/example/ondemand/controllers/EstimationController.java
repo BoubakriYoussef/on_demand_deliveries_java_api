@@ -56,4 +56,15 @@ public class EstimationController {
     public Optional<Estimation> getEstimationById(@PathVariable Long id){
         return estimationService.findEstimationById(id);
     }
+
+
+    // Endpoint for updating estimation status after manager decision
+    @PutMapping("/{estimationId}/acceptOrRefuse")
+    public ResponseEntity<Estimation> updateEstimationForAcceptOrRefuse(
+            @PathVariable Long estimationId,
+            @RequestBody ManagerDecisionRequest decisionRequest) {
+        Estimation updatedEstimation = estimationService.updateForAcceptOrRefuseEstimation(estimationId, decisionRequest);
+        return ResponseEntity.ok(updatedEstimation);
+    }
 }
+

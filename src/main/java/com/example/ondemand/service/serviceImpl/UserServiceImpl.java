@@ -3,11 +3,10 @@ package com.example.ondemand.service.serviceImpl;
 import com.example.ondemand.authentication.authRequest.AuthenticationResponse;
 import com.example.ondemand.authentication.authService.AuthenticationService;
 import com.example.ondemand.authentication.authRequest.UpdateUserRequest;
-import com.example.ondemand.entities.Restaurant;
+import com.example.ondemand.entities.*;
 import com.example.ondemand.repositories.RestaurantRepository;
 import com.example.ondemand.securityConfiguration.JwtService;
 import com.example.ondemand.repositories.UserRepository;
-import com.example.ondemand.entities.User;
 import com.example.ondemand.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -94,6 +97,12 @@ public class UserServiceImpl implements UserService {
             return userRepository.findByRole_Name(roleName);
     }
 
+    @Override
+    public List<User> findAvailableDrivers() {
+        List<User> availableDrivers = userRepository.findByRole_Name("DRIVER");
+
+        return availableDrivers;
+    }
 
 
     public ResponseEntity<Optional<User>> findByUsername(String username) {

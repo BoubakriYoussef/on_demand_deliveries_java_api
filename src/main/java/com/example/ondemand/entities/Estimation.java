@@ -1,5 +1,6 @@
 package com.example.ondemand.entities;
 
+import com.example.ondemand.enumClass.EstimationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,9 @@ public class Estimation {
     private double estimatedFee;
     private LocalDateTime estimatedDeliveryTime;
     private LocalDateTime estimatedPickUpTime;
+
+    @Enumerated(EnumType.STRING)
+    private EstimationStatus estimationStatus;
 
     @Column(unique = true)
     private String uuid;

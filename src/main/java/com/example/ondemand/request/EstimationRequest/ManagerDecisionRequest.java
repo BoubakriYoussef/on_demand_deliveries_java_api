@@ -1,4 +1,4 @@
-package com.example.ondemand.request;
+package com.example.ondemand.request.EstimationRequest;
 
 
 import lombok.AllArgsConstructor;
@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleRequest {
-    private String name;
+public class ManagerDecisionRequest {
+    private boolean managerDecision;
 }

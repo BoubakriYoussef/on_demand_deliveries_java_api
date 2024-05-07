@@ -1,6 +1,6 @@
 package com.example.ondemand.service;
 
-import com.example.ondemand.request.NewPriceStrategyRequest;
+import com.example.ondemand.request.PriceStrategyRequest.NewPriceStrategyRequest;
 import com.example.ondemand.entities.PricingStrategy;
 
 import java.util.List;
