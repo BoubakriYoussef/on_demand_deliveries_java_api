@@ -24,6 +24,8 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +72,7 @@ public class EstimationServiceImpl implements EstimationService {
     private static final String key = "5b3ce3597851110001cf6248eb36aaad5afb41909b627fc97e724c15";
 
 
-    // Calcul de la distance entre Customer & Restaurant en utilisant lat et long de la requête NewEstimationRequest
+    // Calcul de la distance entre Customer & Restaurant en utilisant latitude et longitude de la requête NewEstimationRequest
     @Override
     public double calculateRoadDistance(NewEstimationRequest newEstimationRequest) throws JsonProcessingException, JsonMappingException {
 
@@ -114,16 +116,15 @@ public class EstimationServiceImpl implements EstimationService {
 
         double minimalFee = pricingStrategy.getMinimalFee();
 
-
         double minimalDistance = pricingStrategy.getMinimalDistance() ;
 
         double estimatedFee= 0;
 
-        if(unitOfMeasure == unitOfMeasure.KM){
+        if(unitOfMeasure == UnitOfMeasure.KM){
             double k = (distance - minimalDistance) * deliveryFeePerKilometer;
             estimatedFee = k + minimalFee + tva + serviceFee;
         }
-        else if(unitOfMeasure == unitOfMeasure.MILE) {
+        else if(unitOfMeasure == UnitOfMeasure.MILE){
             double m = (distance - minimalDistance) * deliveryFeePerMile;
             estimatedFee = m + minimalFee + tva + serviceFee;
         }
@@ -132,41 +133,30 @@ public class EstimationServiceImpl implements EstimationService {
 
     }
 
-
     //Estimer le temps de livraison si l'ORDER est instantané
-
     @Override
-    public LocalDateTime estimateDeliveryTime(NewEstimationRequest newEstimationRequest) throws JsonProcessingException {
+    public LocalDateTime estimateDeliveryTime(NewEstimationRequest request) throws JsonProcessingException {
+        // Define variables
+        double preparationTime = 1;
+        double distance = calculateRoadDistance(request);
+        double driverAverageSpeed = 40;
+        Duration duration = Duration.ZERO; // Initialize duration using Duration class
+        LocalDateTime orderTime = request.getOrderTime();
 
-        //Order Time
-        LocalDateTime orderTime = newEstimationRequest.getOrderTime();
+        // Calculate transportation time in minutes
+        int transportationTimeInMinutes = (int) Math.ceil(distance / driverAverageSpeed * 60);
 
-        //ORDER TYPE
-        OrderType orderType = newEstimationRequest.getOrderType();
-
-        //PREPARATION
-        double preparationTime = 0.25;
-
-        //DISTANCE
-        double distance = calculateRoadDistance(newEstimationRequest);
-
-
-        //Vitesse moyenne du livreur sur la moto
-        double driverAverageSpeed = 40.0;
-
-        double duration = 0;
-
-        //INSTANT ORDER
-        //0.08 heures pour les retards imprévus
-        if (orderType == OrderType.INSTANT) {
-            double drivingTime = distance / driverAverageSpeed;
-            duration = drivingTime + preparationTime + 0.08;
+        // Apply calculation for INSTANT orders
+        if (request.getOrderType().equals(OrderType.INSTANT)) {
+            duration = duration.ofMinutes(transportationTimeInMinutes)
+                    .plusMinutes((int) (preparationTime * 60))
+                    .plusMinutes(8); // Add preparation time and delay margin
         }
 
+        // Calculate estimated delivery time
+        LocalDateTime estimatedDeliveryTime = orderTime.plus(duration);
 
-        //Conversion de duration en long
-        LocalDateTime estimatedDeliveryTime = orderTime.plusHours((long) duration);
-
+        // Return estimated delivery time and duration (without DeliveryTime class)
         return estimatedDeliveryTime;
     }
 
@@ -175,29 +165,20 @@ public class EstimationServiceImpl implements EstimationService {
     //Estimer le temps de récupération si l'ORDER est plannifié
     @Override
     public LocalDateTime estimatePickUpTime(NewEstimationRequest newEstimationRequest) throws JsonProcessingException {
-        //Order Time
-        LocalDateTime orderTime = newEstimationRequest.getOrderTime();
+       LocalDateTime orderTime = newEstimationRequest.getOrderTime();
+       OrderType orderType = newEstimationRequest.getOrderType();
+       double distance = 10.0;
+       double averageSpeed = 40.0;
+       LocalDateTime requestedDeliveryTime = newEstimationRequest.getRequestedDeliveryTime();
+       LocalDateTime estimatedPickUpTime = null;
 
-        //Order Type
-        OrderType orderType = newEstimationRequest.getOrderType();
+       if(orderType == OrderType.PLANNED){
+           Duration drivingTime = Duration.ofMinutes ((long) (distance / averageSpeed * 60));
+           estimatedPickUpTime = requestedDeliveryTime.minus(drivingTime);
+           return  estimatedPickUpTime;
+       }
 
-        double distance = calculateRoadDistance(newEstimationRequest);
-
-        LocalDateTime requestedDeliveryTime = newEstimationRequest.getRequestedDeliveryTime();
-
-        double drivingTime = 0.0;
-
-        double averageSpeed = 40.0;
-
-        LocalDateTime estimatedPickUpTime = null;
-
-        if(orderType == OrderType.PLANNED){
-            drivingTime = distance / averageSpeed ;
-            estimatedPickUpTime = requestedDeliveryTime.minusHours((long) (drivingTime * 60));
-            return estimatedPickUpTime;
-        }
-        return estimatedPickUpTime;
-
+       return estimatedPickUpTime;
     }
 
 

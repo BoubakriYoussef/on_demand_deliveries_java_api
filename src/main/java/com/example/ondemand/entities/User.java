@@ -48,7 +48,7 @@ public class User implements UserDetails {
     private Role role;
     @OneToMany
     private List<Restaurant> restaurants;
-    @OneToMany(mappedBy = "driver")
+    @OneToMany
     private List<Delivery> deliveries;
 
     @OneToMany

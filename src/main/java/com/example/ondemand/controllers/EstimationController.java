@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,5 +67,50 @@ public class EstimationController {
         Estimation updatedEstimation = estimationService.updateForAcceptOrRefuseEstimation(estimationId, decisionRequest);
         return ResponseEntity.ok(updatedEstimation);
     }
+
+    @GetMapping("/calculate")
+    public ResponseEntity<?> calculateRoadDistance(@RequestBody NewEstimationRequest newEstimationRequest) {
+        try {
+            double distance = estimationService.calculateRoadDistance(newEstimationRequest);
+            return ResponseEntity.ok("Distance: " + distance + " km");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing JSON");
+        }
+    }
+
+    @GetMapping("/estimate-delivery-fee")
+    public ResponseEntity<Double> estimateDeliveryFee(@RequestBody NewEstimationRequest newEstimationRequest) {
+        try {
+            double estimatedFee = estimationService.estimateDeliveryFee(newEstimationRequest);
+            return ResponseEntity.ok(estimatedFee);
+        } catch (JsonProcessingException e) {
+            // Gérer l'erreur de façon appropriée, par exemple, en renvoyant une réponse HTTP avec un code d'erreur
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/estimateDeliveryTime")
+    public ResponseEntity<LocalDateTime> estimateDeliveryTime(@RequestBody NewEstimationRequest newEstimationRequest) {
+        try {
+            LocalDateTime estimatedDeliveryTime = estimationService.estimateDeliveryTime(newEstimationRequest);
+            return new ResponseEntity<>(estimatedDeliveryTime, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/estimatePickUpTime")
+    public ResponseEntity<LocalDateTime> estimatePickUpTime(@RequestBody NewEstimationRequest newEstimationRequest) {
+        try {
+            LocalDateTime estimatedDeliveryTime = estimationService.estimatePickUpTime(newEstimationRequest);
+            return new ResponseEntity<>(estimatedDeliveryTime, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }
 

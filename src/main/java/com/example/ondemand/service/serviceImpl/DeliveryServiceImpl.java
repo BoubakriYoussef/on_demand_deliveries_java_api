@@ -2,12 +2,12 @@ package com.example.ondemand.service.serviceImpl;
 
 import com.example.ondemand.entities.*;
 import com.example.ondemand.enumClass.Status;
-import com.example.ondemand.repositories.AvailabilityRepository;
 import com.example.ondemand.repositories.DeliveryRepository;
 import com.example.ondemand.repositories.RateRepository;
 import com.example.ondemand.repositories.UserRepository;
-import com.example.ondemand.request.DeliveryRequest.DeliveryUpdateRequest;
+import com.example.ondemand.request.DeliveryRequest.UpdateDeliveryPaymentRequest;
 import com.example.ondemand.request.DeliveryRequest.DriverDecisionRequest;
+import com.example.ondemand.request.DeliveryRequest.UpdateDeliveryStatusRequest;
 import com.example.ondemand.request.rateRequest.RateUpdateRequest;
 import com.example.ondemand.service.AvailabilityService;
 import com.example.ondemand.service.DeliveryService;
@@ -45,7 +45,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     //Mettre à jour les détails du Paiement et de la livraison durant le processus de livraison
     @Override
-    public void updateDeliveryDetails(Long deliveryId, DeliveryUpdateRequest updateRequest) {
+    public void updateDeliveryDetails(Long deliveryId, UpdateDeliveryPaymentRequest updateRequest) {
         // Récupérer la livraison depuis la base de données
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new EntityNotFoundException("Delivery not found with id: " + deliveryId));
@@ -58,7 +58,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 payment.setPaymentAmount(updateRequest.getPaymentAmount());
                 payment.setPaymentTime(updateRequest.getPaymentTime());
                 payment.setTotalValue(updateRequest.getTotalValue());
-                payment.setWithdrawDone(updateRequest.isWithdrawDone());
+                payment.setWithdrawDone(updateRequest.isWithDrawDone());
 
                 // Mettre à jour les détails du pourboire
                 Tip tip = payment.getTip();
@@ -78,7 +78,7 @@ public class DeliveryServiceImpl implements DeliveryService {
                 payment.setPaymentAmount(updateRequest.getPaymentAmount());
                 payment.setPaymentTime(updateRequest.getPaymentTime());
                 payment.setTotalValue(updateRequest.getTotalValue());
-                payment.setWithdrawDone(updateRequest.isWithdrawDone());
+                payment.setWithdrawDone(updateRequest.isWithDrawDone());
                 payment.setTip(tip);
 
                 delivery.setPayment(payment);
@@ -126,56 +126,11 @@ public class DeliveryServiceImpl implements DeliveryService {
         }
 
 
-        //Assigner un utilisateur (Driver) à Delivery
-        @Transactional
-        @Override
-        public void assignDriverToDelivery(Long idDelivery) {
-            // Récupérer la livraison à partir de l'identifiant
-            Delivery delivery = deliveryRepository.findById(idDelivery)
-                    .orElseThrow(() -> new RuntimeException("Delivery not found with ID: " + idDelivery));
-
-            // Vérifier si la livraison est déjà assignée
-            if (delivery.getStatus() != Status.UNASSIGNED) {
-                throw new RuntimeException("Delivery is already assigned.");
-            }
-
-            // Récupérer la liste des conducteurs disponibles
-            List<User> availableDrivers = userService.findAvailableDrivers();
-
-            // Exclure les conducteurs qui ont déjà refusé la livraison
-            List<User> nonRejectedDrivers = availableDrivers.stream()
-                    .filter(driver -> !hasDriverRejectedDelivery(driver, idDelivery))
-                    .collect(Collectors.toList());
 
 
 
-            // Trouver le premier conducteur disponible pour cette livraison
-            User availableDriver = availableDrivers.stream()
-                    .filter(driver -> isDriverAvailableForDelivery(delivery, driver))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("No available driver found for this delivery."));
 
-            // Assigner la livraison au conducteur trouvé
-            delivery.setUser(availableDriver);
-            delivery.setStatus(Status.ASSIGNED);
 
-            // Mettre à jour la livraison dans la base de données
-            deliveryRepository.save(delivery);
-
-            // Envoyer une notification au conducteur pour lui informer de la nouvelle livraison assignée
-            // (Vous pouvez implémenter cette fonctionnalité selon vos besoins)
-
-        }
-
-        private boolean hasDriverRejectedDelivery(User driver, Long deliveryId) {
-            // Récupérer la livraison à partir de l'identifiant
-            Delivery delivery = deliveryRepository.findById(deliveryId)
-                    .orElseThrow(() -> new RuntimeException("Delivery not found with ID: " + deliveryId));
-
-            // Vérifier si le conducteur a déjà rejeté cette livraison
-            return delivery.getRejections().stream()
-                    .anyMatch(rejection -> rejection.getUser().equals(driver));
-        }
 
 
 
@@ -208,7 +163,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
 
-    private void acceptOrRefuseDelivery(DriverDecisionRequest decisionRequest){
+    public void acceptOrRefuseDelivery(DriverDecisionRequest decisionRequest){
         Long deliveryId = decisionRequest.getDeliveryId();
         boolean accept = decisionRequest.isAccept();
 
@@ -224,5 +179,15 @@ public class DeliveryServiceImpl implements DeliveryService {
             // Le conducteur refuse la livraison
             // Gérer le cas où la livraison est refusée
         }
+    }
+
+    @Override
+    public void updateDeliveryStatus(Long deliveryId, UpdateDeliveryStatusRequest updateDeliveryStatusRequest) {
+            Delivery delivery = deliveryRepository.findById(deliveryId)
+                    .orElseThrow(() -> new EntityNotFoundException("Delivery not found in the database "));
+
+            if(updateDeliveryStatusRequest != null){
+                delivery.setStatus(updateDeliveryStatusRequest.getStatus());
+            }
     }
 }
