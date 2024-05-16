@@ -19,7 +19,7 @@ public class DeliveryController {
     @Autowired
     DeliveryService deliveryService;
 
-    @PutMapping("/{deliveryId}/payment")
+   /* @PutMapping("/{deliveryId}/payment")
     public ResponseEntity<String> updatePayment(@PathVariable Long deliveryId, @RequestBody UpdateDeliveryPaymentRequest updateRequest) {
         try {
             deliveryService.updateDeliveryDetails(deliveryId, updateRequest);
@@ -27,7 +27,7 @@ public class DeliveryController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-    }
+    }*/
 
     @PutMapping("/{deliveryId}/rate")
     public ResponseEntity<String> updateRate(@PathVariable Long deliveryId, @RequestBody RateUpdateRequest rateUpdateRequest) {

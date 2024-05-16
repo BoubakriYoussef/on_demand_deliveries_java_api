@@ -7,7 +7,7 @@ import com.example.ondemand.request.rateRequest.RateUpdateRequest;
 
 public interface DeliveryService {
 
-    void updateDeliveryDetails(Long deliveryId, UpdateDeliveryPaymentRequest updateRequest);
+   // void updateDeliveryDetails(Long deliveryId, UpdateDeliveryPaymentRequest updateRequest);
 
     void updateRate (Long deliveryId, RateUpdateRequest updateRateRequest);
 

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
+import java.util.Optional;
 
 @RepositoryRestResource
 public interface RestaurantRepository extends JpaRepository<Restaurant,Long> {
@@ -16,4 +17,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Long> {
     Restaurant findByUser(User user);
 
     void deleteById(Long restaurantId);
+
+    Optional<Restaurant> findByUserAndName(User user, String name);
 }

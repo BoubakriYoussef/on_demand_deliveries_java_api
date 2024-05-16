@@ -13,7 +13,6 @@ import com.example.ondemand.service.AvailabilityService;
 import com.example.ondemand.service.DeliveryService;
 import com.example.ondemand.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DeliveryServiceImpl implements DeliveryService {
@@ -43,8 +41,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Autowired
     UserService userService;
 
-    //Mettre à jour les détails du Paiement et de la livraison durant le processus de livraison
-    @Override
+   /* //Mettre à jour les détails du Paiement et de la livraison durant le processus de livraison
+   *//* @Override
     public void updateDeliveryDetails(Long deliveryId, UpdateDeliveryPaymentRequest updateRequest) {
         // Récupérer la livraison depuis la base de données
         Delivery delivery = deliveryRepository.findById(deliveryId)
@@ -83,12 +81,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 
                 delivery.setPayment(payment);
             }
-        }
+        }*//*
 
         // Sauvegarder la livraison mise à jour
         deliveryRepository.save(delivery);
     }
-
+*/
 
     //Evaluer une livraison à condition que la commande soit livrée
         public void updateRate(Long deliveryId, RateUpdateRequest rateUpdateRequest) {
@@ -124,14 +122,6 @@ public class DeliveryServiceImpl implements DeliveryService {
                 throw new IllegalStateException("Rate can only be updated for delivered deliveries.");
             }
         }
-
-
-
-
-
-
-
-
 
 
     //1- Find Available Driver

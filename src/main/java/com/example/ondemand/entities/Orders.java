@@ -1,5 +1,6 @@
 package com.example.ondemand.entities;
 
+import com.example.ondemand.request.EstimationRequest.OrderType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,8 @@ public class Orders {
     private LocalDateTime orderTime;
 
     private LocalDateTime requestedDeliveryTime;
+
+    private OrderType orderType;
 
 
     @Column(unique = true)
