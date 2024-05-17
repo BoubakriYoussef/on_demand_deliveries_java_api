@@ -6,6 +6,7 @@ import com.example.ondemand.entities.Estimation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.tomcat.util.json.ParseException;
+import org.hibernate.query.Order;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -15,27 +16,42 @@ import java.util.Optional;
 
 public interface EstimationService {
 
-     Estimation createEstimation(NewEstimationRequest newEstimationRequest) throws IOException;
+     Estimation createEstimation(NewEstimationRequest newEstimationRequest) throws IOException, ParseException;
 
      void deleteEstimation(Long id);
 
      List<Estimation> getAllEstimationsByAuthenticatedUser(User user);
 
-     Estimation updateEstimation(Long estimationId, NewEstimationRequest request) throws IOException;
+     Estimation updateEstimation(Long estimationId, NewEstimationRequest request) throws IOException, ParseException;
 
      Estimation updateForAcceptOrRefuseEstimation(Long estimationId, ManagerDecisionRequest decisionRequest);
 
 
      Optional<Estimation> findEstimationById(Long id);
 
-     public double estimateDeliveryFee(NewEstimationRequest newEstimationRequest) throws IOException, ParseException;
+     public double estimateDeliveryFee(double customerLatitude,
+                                       double customerLongitude,
+                                       double restaurantLatitude,
+                                       double restaurantLongitude) throws IOException, ParseException;
 
-     public double calculateRoadDistance(NewEstimationRequest newEstimationRequest) throws IOException;
+     public double calculateRoadDistance(double customerLatitude, double customerLongitude, double restaurantLatitude, double restaurantLongitude) throws IOException;
 
 
-     public LocalDateTime estimateDeliveryTime(NewEstimationRequest newEstimationRequest) throws IOException;
+     public LocalDateTime estimateDeliveryTime(double customerLatitude,
+                                               double customerLongitude,
+                                               double restaurantLatitude,
+                                               double restaurantLongitude,
+                                               LocalDateTime orderTime,
+                                               OrderType orderType,
+                                               LocalDateTime requestedDeliveryTime) throws IOException;
 
 
-     public LocalDateTime estimatePickUpTime(NewEstimationRequest newEstimationRequest) throws IOException;
+
+     public LocalDateTime estimatePickUpTime (LocalDateTime requestedDeliveryTime,
+                                              double customerLatitude,
+                                              double customerLongitude,
+                                              double restaurantLatitude,
+                                              double restaurantLongitude,
+                                              OrderType orderType) throws IOException ;
 
 }

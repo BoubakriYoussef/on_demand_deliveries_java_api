@@ -14,29 +14,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class OndemandApplication implements CommandLineRunner {
+public class OndemandApplication {
 
 
-    @Autowired
-    DayRepository dayRepository;
 
-    @Autowired
-    RoleRepository roleRepository;
 
     public static void main(String[] args) {
         SpringApplication.run(OndemandApplication.class, args);
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        int i;
 
-        String[] dayNames = {"Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"};
-
-        for(i=0;i<6;i++) {
-            Day day = new Day();
-            day.setDayName(dayNames[i]);
-            dayRepository.save(day);
-        }
-    }
 }

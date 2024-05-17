@@ -12,10 +12,13 @@ import com.example.ondemand.repositories.*;
 import com.example.ondemand.service.EstimationService;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.tomcat.util.json.ParseException;
+import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -60,11 +63,11 @@ public class EstimationServiceImpl implements EstimationService {
 
 
     @Override
-    public double calculateRoadDistance(NewEstimationRequest newEstimationRequest) throws IOException {
-        double lat1 = Math.toRadians(newEstimationRequest.getCustomerLatitude());
-        double lon1 = Math.toRadians(newEstimationRequest.getCustomerLongitude());
-        double lat2 = Math.toRadians(newEstimationRequest.getRestaurantLatitude());
-        double lon2 = Math.toRadians(newEstimationRequest.getRestaurantLongitude());
+    public double calculateRoadDistance(double customerLatitude, double customerLongitude, double restaurantLatitude, double restaurantLongitude) throws IOException {
+        double lat1 = Math.toRadians(customerLatitude);
+        double lon1 = Math.toRadians(customerLongitude);
+        double lat2 = Math.toRadians(restaurantLatitude);
+        double lon2 = Math.toRadians(restaurantLongitude);
 
         double EARTH_RADIUS = 6371;
 
@@ -85,16 +88,23 @@ public class EstimationServiceImpl implements EstimationService {
     }
 
 
+
     // Estimer le prix de livraison de la commande
 
         @Override
-        public double estimateDeliveryFee(NewEstimationRequest newEstimationRequest) throws IOException {
+        public double estimateDeliveryFee(double customerLatitude,
+                                          double customerLongitude,
+                                          double restaurantLatitude,
+                                          double restaurantLongitude)throws IOException, ParseException {
 
             //Calculate distance using calculateRoadDistance method
-            double distance = calculateRoadDistance(newEstimationRequest);
+            double distance = calculateRoadDistance(customerLatitude,
+                    customerLongitude,
+                    restaurantLatitude,
+                    restaurantLongitude);
 
             //Recuperate pricing strategy with her fields
-            PricingStrategy pricingStrategy = pricingStrategyRepository.findByName(newEstimationRequest.getPricingStrategyName());
+            PricingStrategy pricingStrategy = pricingStrategyRepository.findByName("Standard Pricing");
 
             UnitOfMeasure unitOfMeasure = pricingStrategy.getUnitOfMeasure();
 
@@ -112,12 +122,18 @@ public class EstimationServiceImpl implements EstimationService {
 
             double estimatedFee = 0;
 
-            if (unitOfMeasure == UnitOfMeasure.KM) {
-                double k = (distance - minimalDistance) * deliveryFeePerKilometer;
-                estimatedFee = k + minimalFee + tva + serviceFee;
-            } else if (unitOfMeasure == UnitOfMeasure.MILE) {
-                double m = (distance - minimalDistance) * deliveryFeePerMile;
-                estimatedFee = m + minimalFee + tva + serviceFee;
+
+            if(distance<=2.0){
+                return estimatedFee = 5;
+            } else {
+
+                if (unitOfMeasure == UnitOfMeasure.KM) {
+                    double k = (distance - minimalDistance) * deliveryFeePerKilometer;
+                    estimatedFee = k + minimalFee + tva + serviceFee;
+                } else if (unitOfMeasure == UnitOfMeasure.MILE) {
+                    double m = (distance - minimalDistance) * deliveryFeePerMile;
+                    estimatedFee = m + minimalFee + tva + serviceFee;
+                }
             }
 
             return estimatedFee;
@@ -125,57 +141,63 @@ public class EstimationServiceImpl implements EstimationService {
         }
 
         //Estimer le temps de livraison si l'ORDER est instantané
-        @Override
-        public LocalDateTime estimateDeliveryTime (NewEstimationRequest request) throws IOException {
-            // Define variables
-            double preparationTime = 1;
-            double distance = calculateRoadDistance(request);
-            double driverAverageSpeed = 40;
-            Duration duration = Duration.ZERO; // Initialize duration using Duration class
-            LocalDateTime orderTime = request.getOrderTime();
 
-            // Calculate transportation time in minutes
+        @Override
+        public LocalDateTime estimateDeliveryTime (double customerLatitude,
+                                                   double customerLongitude,
+                                                   double restaurantLatitude,
+                                                   double restaurantLongitude,
+                                                   LocalDateTime orderTime,
+                                                   OrderType orderType,
+                                                   LocalDateTime requestedDeliveryTime) throws IOException {
+
+            double distance = calculateRoadDistance(customerLatitude,customerLongitude,restaurantLatitude,restaurantLongitude);
+            double preparationTime = 0.25;
+            double driverAverageSpeed = 40.0;
+            Duration duration = Duration.ZERO;
+
             int transportationTimeInMinutes = (int) Math.ceil(distance / driverAverageSpeed * 60);
 
-            // Apply calculation for INSTANT orders
-            if (request.getOrderType().equals(OrderType.INSTANT)) {
+            if (orderType.equals(OrderType.INSTANT)) {
                 duration = duration.ofMinutes(transportationTimeInMinutes)
                         .plusMinutes((int) (preparationTime * 60))
-                        .plusMinutes(8); // Add preparation time and delay margin
+                        .plusMinutes(8); // Delay margin
+
+                LocalDateTime estimatedDeliveryTime = orderTime.plus(duration);
+                return estimatedDeliveryTime;
+            } else if (orderType.equals(OrderType.PLANNED)) {
+                return requestedDeliveryTime;
+            } else {
+                throw new IllegalArgumentException("Unknown OrderType: " + orderType);
             }
-
-            // Calculate estimated delivery time
-            LocalDateTime estimatedDeliveryTime = orderTime.plus(duration);
-
-            // Return estimated delivery time and duration (without DeliveryTime class)
-            return estimatedDeliveryTime;
         }
 
 
-        //Estimer le temps de récupération si l'ORDER est plannifié
-        @Override
-        public LocalDateTime estimatePickUpTime (NewEstimationRequest newEstimationRequest) throws
-                IOException {
-            LocalDateTime orderTime = newEstimationRequest.getOrderTime();
-            OrderType orderType = newEstimationRequest.getOrderType();
-            double distance = calculateRoadDistance(newEstimationRequest);
-            double averageSpeed = 40.0;
-            LocalDateTime requestedDeliveryTime = newEstimationRequest.getRequestedDeliveryTime();
-            LocalDateTime estimatedPickUpTime = null;
+    @Override
+    public LocalDateTime estimatePickUpTime(LocalDateTime requestedDeliveryTime,
+                                            double customerLatitude,
+                                            double customerLongitude,
+                                            double restaurantLatitude,
+                                            double restaurantLongitude,
+                                            OrderType orderType) throws IOException {
+        double distance = calculateRoadDistance(customerLatitude, customerLongitude, restaurantLatitude, restaurantLongitude);
+        double averageSpeed = 40.0; // km/h
+        Duration drivingTime = Duration.ofMinutes((long) (distance / averageSpeed * 60));
 
-            if (orderType == OrderType.PLANNED) {
-                Duration drivingTime = Duration.ofMinutes((long) (distance / averageSpeed * 60));
-                estimatedPickUpTime = requestedDeliveryTime.minus(drivingTime);
-                return estimatedPickUpTime;
-            }
-
-            return estimatedPickUpTime;
+        if (orderType.equals(OrderType.INSTANT)) {
+            return requestedDeliveryTime.minusMinutes((long) (0.25 * 60)) // Preparation time
+                    .minusMinutes(8); // Margin time
+        } else if (orderType.equals(OrderType.PLANNED)) {
+            return requestedDeliveryTime.minus(drivingTime);
+        } else {
+            throw new IllegalArgumentException("Unknown OrderType: " + orderType);
         }
+    }
 
 
-        //Créer Estimation
+    //Créer Estimation
         @Override
-        public Estimation createEstimation (NewEstimationRequest request) throws IOException {
+        public Estimation createEstimation (NewEstimationRequest request) throws IOException, ParseException {
             // Get Authenticated user
             User authenticatedUser = authenticationService.getAuthenticatedUser();
 
@@ -215,9 +237,43 @@ public class EstimationServiceImpl implements EstimationService {
             // Create new Delivery
             Delivery delivery = createDelivery(request.getDeliveryStatus(), request.getDeliveryPaymentMethod(), order, rate);
 
+            double distance = calculateRoadDistance(request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude());
 
-            // Create new Estimation
-            Estimation estimation = createEstimation(pricingStrategy, delivery, restaurant, request);
+
+            double estimatedFee = estimateDeliveryFee(request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude());
+
+            LocalDateTime estimatedDeliveryTime = estimateDeliveryTime(request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude(),
+                    request.getOrderTime(),
+                    request.getOrderType(),
+                    request.getRequestedDeliveryTime());
+
+
+            LocalDateTime estimatedPickUpTime = estimatePickUpTime(request.getRequestedDeliveryTime(),
+                    request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude(),
+                    request.getOrderType());
+
+
+            Estimation estimation = new Estimation();
+            estimation.setDistance(distance);
+            estimation.setEstimatedFee(estimatedFee);
+            estimation.setEstimatedDeliveryTime(estimatedDeliveryTime);
+            estimation.setEstimatedPickUpTime(estimatedPickUpTime);
+            estimation.setPricingStrategy(pricingStrategy);
+            estimation.setDelivery(delivery);
+            estimation.setRestaurant(restaurant);
+
             return estimationRepository.save(estimation);
         }
 
@@ -240,19 +296,38 @@ public class EstimationServiceImpl implements EstimationService {
         //update estimation
         @Override
         public Estimation updateEstimation (Long estimationId, NewEstimationRequest request) throws
-                IOException {
+                IOException, ParseException {
             // Retrieve the estimation from the database
             Estimation estimation = estimationRepository.findById(estimationId)
                     .orElseThrow(() -> new EntityNotFoundException("Estimation not found with id: " + estimationId));
 
 
-            double distance = calculateRoadDistance(request);
+            double distance = calculateRoadDistance(request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude());
 
-            double estimatedFee = estimateDeliveryFee(request);
 
-            LocalDateTime estimatedDeliveryTime = estimateDeliveryTime(request);
+            double estimatedFee = estimateDeliveryFee(request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude());
 
-            LocalDateTime estimatedPickUpTime = estimatePickUpTime(request);
+            LocalDateTime estimatedDeliveryTime = estimateDeliveryTime(request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude(),
+                    request.getOrderTime(),
+                    request.getOrderType(),
+                    request.getRequestedDeliveryTime());
+
+
+            LocalDateTime estimatedPickUpTime = estimatePickUpTime(request.getRequestedDeliveryTime(),
+                    request.getCustomerLatitude(),
+                    request.getCustomerLongitude(),
+                    request.getRestaurantLatitude(),
+                    request.getRestaurantLongitude(),
+                    request.getOrderType());
 
 
             // Update the estimation properties
@@ -360,6 +435,7 @@ public class EstimationServiceImpl implements EstimationService {
             return addressRepository.save(address);
         }
 
+
         // Get or create restaurant by AuthenticatedUser
         private Restaurant getOrCreateRestaurant (User authenticatedUser, String name, String phoneNumber, Address
         address){
@@ -445,28 +521,7 @@ public class EstimationServiceImpl implements EstimationService {
         }
 
 
-        // Create Estimation object
-        public Estimation createEstimation (PricingStrategy pricingStrategy, Delivery delivery, Restaurant
-        restaurant, NewEstimationRequest newEstimationRequest) throws IOException {
 
-            double distance = calculateRoadDistance(newEstimationRequest);
-
-            double estimatedFee = estimateDeliveryFee(newEstimationRequest);
-
-            LocalDateTime estimatedDeliveryTime = estimateDeliveryTime(newEstimationRequest);
-
-            LocalDateTime estimatedPickUpTime = estimatePickUpTime(newEstimationRequest);
-
-            Estimation estimation = new Estimation();
-            estimation.setDistance(distance);
-            estimation.setEstimatedFee(estimatedFee);
-            estimation.setEstimatedDeliveryTime(estimatedDeliveryTime);
-            estimation.setEstimatedPickUpTime(estimatedPickUpTime);
-            estimation.setPricingStrategy(pricingStrategy);
-            estimation.setDelivery(delivery);
-            estimation.setRestaurant(restaurant);
-            return estimation;
-        }
 
         public Rate createRate () {
             Rate rate = new Rate();

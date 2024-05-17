@@ -6,7 +6,6 @@ import com.example.ondemand.entities.User;
 import com.example.ondemand.request.EstimationRequest.*;
 import com.example.ondemand.entities.Estimation;
 import com.example.ondemand.service.EstimationService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,7 @@ public class EstimationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/add")
-    public ResponseEntity<Estimation> createEstimation(@RequestBody NewEstimationRequest request) throws IOException {
+    public ResponseEntity<Estimation> createEstimation(@RequestBody NewEstimationRequest request) throws IOException, ParseException {
         Estimation estimation = estimationService.createEstimation(request);
         return ResponseEntity.ok(estimation);
     }
@@ -50,7 +49,7 @@ public class EstimationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Estimation> updateEstimation(Long id, @RequestBody NewEstimationRequest request) throws IOException {
+    public ResponseEntity<Estimation> updateEstimation(Long id, @RequestBody NewEstimationRequest request) throws IOException, ParseException {
         Estimation updatedEstimation = estimationService.updateEstimation(id, request);
         return new ResponseEntity<>(updatedEstimation, HttpStatus.OK);
     }
@@ -71,11 +70,14 @@ public class EstimationController {
     }
 
 
-    //For testing purpose
+/*    //For testing purpose
     @GetMapping("/calculate")
     public ResponseEntity<?> calculateRoadDistance(@RequestBody NewEstimationRequest newEstimationRequest) {
         try {
-            double distance = estimationService.calculateRoadDistance(newEstimationRequest);
+            double distance = estimationService.calculateRoadDistance(newEstimationRequest.getCustomerLatitude(),
+                    newEstimationRequest.getCustomerLongitude(),
+                    newEstimationRequest.getRestaurantLatitude(),
+                    newEstimationRequest.getRestaurantLongitude());
             return ResponseEntity.ok("Distance: " + distance + " km");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -83,27 +85,30 @@ public class EstimationController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
-
+/*
     //For testing purpose
     @GetMapping("/estimate-delivery-fee")
-    public ResponseEntity<Double> estimateDeliveryFee(@RequestBody NewEstimationRequest newEstimationRequest) {
+    public ResponseEntity<Double> estimateDeliveryFee(@RequestParam double customerLatitude, @RequestParam double customerLongitude, @RequestParam double restaurantLatitude, @RequestParam double restaurantLongitude) {
         try {
-            double estimatedFee = estimationService.estimateDeliveryFee(newEstimationRequest);
+            NewEstimationRequest request = new NewEstimationRequest();
+            request.setCustomerLatitude(customerLatitude);
+            request.setCustomerLongitude(customerLongitude);
+            request.setRestaurantLatitude(restaurantLatitude);
+            request.setRestaurantLongitude(restaurantLongitude);
+
+            double estimatedFee = estimationService.estimateDeliveryFee(request);
             return ResponseEntity.ok(estimatedFee);
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             // Gérer l'erreur de façon appropriée, par exemple, en renvoyant une réponse HTTP avec un code d'erreur
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
         }
-    }
+    }*/
 
 
-    //For testing purpose
+
+   /* //For testing purpose
     @PostMapping("/estimateDeliveryTime")
     public ResponseEntity<LocalDateTime> estimateDeliveryTime(@RequestBody NewEstimationRequest newEstimationRequest) {
         try {
@@ -113,9 +118,9 @@ public class EstimationController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+*/
 
-
-    //For testing purpose
+  /*  //For testing purpose
     @PostMapping("/estimatePickUpTime")
     public ResponseEntity<LocalDateTime> estimatePickUpTime(@RequestBody NewEstimationRequest newEstimationRequest) {
         try {
@@ -124,6 +129,6 @@ public class EstimationController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
 }
 
