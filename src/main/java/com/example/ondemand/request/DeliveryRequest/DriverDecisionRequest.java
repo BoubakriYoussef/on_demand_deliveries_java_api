@@ -9,6 +9,5 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class DriverDecisionRequest {
-    private Long deliveryId;
     private boolean accept;
 }

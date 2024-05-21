@@ -49,6 +49,7 @@ public class AuthenticationService {
                         .email(request.getEmail())
                         .password(passwordEncoder.encode(request.getPassword()))
                         .phone(request.getPhone())
+                        .isAvailable(request.isAvailable())
                         .role(role)
                         .build();
 
@@ -59,8 +60,6 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
-
-
 
 
     //Authentication Manager has "authenticate" Method that will do the job and throw an Exception

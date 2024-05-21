@@ -1,6 +1,7 @@
 package com.example.ondemand.request.EstimationRequest;
 
 import com.example.ondemand.entities.Time;
+import com.example.ondemand.enumClass.EstimationStatus;
 import com.example.ondemand.enumClass.PaymentMethod;
 import com.example.ondemand.enumClass.Status;
 import lombok.AllArgsConstructor;
@@ -86,9 +87,15 @@ public class NewEstimationRequest {
     private String userEmail;
     private String userPhone;
 
+    private EstimationStatus estimationStatus = EstimationStatus.PENDING;
+
     // Presence check methods for all fields
     public boolean isDistancePresent() {
         return distance != 0;
+    }
+
+    public boolean isEstimationStatusPresent() {
+        return estimationStatus != null;
     }
 
     public boolean isEstimatedFeePresent() {

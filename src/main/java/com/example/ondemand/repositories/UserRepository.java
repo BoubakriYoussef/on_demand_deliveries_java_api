@@ -2,6 +2,7 @@ package com.example.ondemand.repositories;
 
 import com.example.ondemand.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
@@ -19,4 +20,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
     List<User> findAll();
 
     List<User> findByRole_Name(String roleName);
+
+
+    @Query("SELECT u FROM User u JOIN u.role r WHERE r.name = 'DRIVER' AND u.isAvailable = true")
+    List<User> findAllAvailableDrivers();
 }

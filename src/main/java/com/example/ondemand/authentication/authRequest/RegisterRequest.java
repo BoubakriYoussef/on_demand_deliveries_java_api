@@ -17,5 +17,7 @@ public class RegisterRequest {
     private String password;
     private String phone;
 
+    private boolean isAvailable;
+
     private String roleName;
 }

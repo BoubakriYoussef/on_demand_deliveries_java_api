@@ -1,14 +1,11 @@
 package com.example.ondemand.controllers;
 
 
-import com.example.ondemand.request.DeliveryRequest.UpdateDeliveryPaymentRequest;
-import com.example.ondemand.request.DeliveryRequest.DriverDecisionRequest;
-import com.example.ondemand.request.DeliveryRequest.UpdateDeliveryStatusRequest;
 import com.example.ondemand.request.rateRequest.RateUpdateRequest;
 import com.example.ondemand.service.DeliveryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,31 +50,6 @@ public class DeliveryController {
     }*/
 
 
-    @PostMapping("/accept-or-refuse")
-    public ResponseEntity<String> acceptOrRefuseDelivery(@RequestBody DriverDecisionRequest decisionRequest) {
-        try {
-            deliveryService.acceptOrRefuseDelivery(decisionRequest);
-            return ResponseEntity.ok("Delivery decision processed successfully.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Delivery not found with id: " + decisionRequest.getDeliveryId());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to process delivery decision: " + e.getMessage());
-        }
-    }
 
-    @PutMapping("/{deliveryId}/update-status")
-    public ResponseEntity<String> updateDeliveryStatus(@PathVariable Long deliveryId, @RequestBody UpdateDeliveryStatusRequest updateDeliveryStatusRequest) {
-        try {
-            deliveryService.updateDeliveryStatus(deliveryId, updateDeliveryStatusRequest);
-            return ResponseEntity.ok("Delivery status updated successfully.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Delivery not found with id: " + deliveryId);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update delivery status: " + e.getMessage());
-        }
-    }
+
 }

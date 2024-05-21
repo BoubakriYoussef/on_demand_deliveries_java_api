@@ -521,8 +521,6 @@ public class EstimationServiceImpl implements EstimationService {
         }
 
 
-
-
         public Rate createRate () {
             Rate rate = new Rate();
             rate.setRating(0.0);

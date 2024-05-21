@@ -40,6 +40,9 @@ public class User implements UserDetails {
     private String lastName;
     private String phone;
 
+    @Column(name = "is_available")
+    private boolean isAvailable;
+
     @Column(unique = true)
     private String uuid;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
