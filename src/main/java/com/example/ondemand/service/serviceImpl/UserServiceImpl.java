@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public ResponseEntity<Optional<User>> findByUsername(String username) {
-        return ResponseEntity.ok(userRepository.findByEmail(username));
+    public User findByUsername(String username) {
+        return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
     }
 }

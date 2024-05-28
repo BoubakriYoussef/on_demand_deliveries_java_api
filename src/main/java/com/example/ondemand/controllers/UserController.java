@@ -51,6 +51,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You can only update your own information.");
         }
 
+
         userService.updateUser(updateUserRequest,userId);
 
         return ResponseEntity.ok("You updated your own informations ");

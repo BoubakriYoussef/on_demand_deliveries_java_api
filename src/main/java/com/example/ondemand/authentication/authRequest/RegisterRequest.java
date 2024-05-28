@@ -1,6 +1,7 @@
 package com.example.ondemand.authentication.authRequest;
 
 
+import com.example.ondemand.entities.IsAvailable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class RegisterRequest {
     private String password;
     private String phone;
 
-    private boolean isAvailable;
+    private IsAvailable isAvailable;
 
     private String roleName;
 }

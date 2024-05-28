@@ -27,8 +27,8 @@ public class ProposedDeliveryController {
         }
     }
 
-    @PostMapping("/driver-decision")
-    public ResponseEntity<String> driverDecision(@RequestParam Long proposedDeliveryId, @RequestBody DriverDecisionRequest decisionRequest) {
+    @PostMapping("/driver-decision/{proposedDeliveryId}")
+    public ResponseEntity<String> driverDecision(@PathVariable Long proposedDeliveryId, @RequestBody DriverDecisionRequest decisionRequest) {
         try {
             proposedDeliveryService.acceptOrRejectProposedDelivery(proposedDeliveryId, decisionRequest);
             return ResponseEntity.ok("Decision processed successfully.");

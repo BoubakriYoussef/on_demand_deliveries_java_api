@@ -21,4 +21,6 @@ public interface UserService {
     List<User> getUserByRole(String roleName);
 
     List<User> findAvailableDrivers();
+
+    User findByUsername(String username);
 }

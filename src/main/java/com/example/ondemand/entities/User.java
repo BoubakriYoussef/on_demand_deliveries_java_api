@@ -41,7 +41,8 @@ public class User implements UserDetails {
     private String phone;
 
     @Column(name = "is_available")
-    private boolean isAvailable;
+    @Enumerated(EnumType.STRING)
+    private IsAvailable isAvailable;
 
     @Column(unique = true)
     private String uuid;

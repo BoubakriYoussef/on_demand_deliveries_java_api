@@ -21,7 +21,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     List<User> findByRole_Name(String roleName);
 
-
-    @Query("SELECT u FROM User u JOIN u.role r WHERE r.name = 'DRIVER' AND u.isAvailable = true")
+    @Query("SELECT u FROM User u JOIN u.role r WHERE r.name = 'DRIVER' AND u.isAvailable = 'AVAILABLE'")
     List<User> findAllAvailableDrivers();
+
+
 }

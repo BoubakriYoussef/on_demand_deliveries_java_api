@@ -231,11 +231,9 @@ public class EstimationServiceImpl implements EstimationService {
             // Create new Payment
             Payment payment = createPayment(tip);
 
-            //Create Rate
-            Rate rate = createRate();
 
             // Create new Delivery
-            Delivery delivery = createDelivery(request.getDeliveryStatus(), request.getDeliveryPaymentMethod(), order, rate);
+            Delivery delivery = createDelivery(request.getDeliveryStatus(), request.getDeliveryPaymentMethod(),order, request.getRating(), request.getCommentary());
 
             double distance = calculateRoadDistance(request.getCustomerLatitude(),
                     request.getCustomerLongitude(),
@@ -273,6 +271,7 @@ public class EstimationServiceImpl implements EstimationService {
             estimation.setPricingStrategy(pricingStrategy);
             estimation.setDelivery(delivery);
             estimation.setRestaurant(restaurant);
+            estimation.setUser(authenticatedUser);
 
             return estimationRepository.save(estimation);
         }
@@ -505,22 +504,6 @@ public class EstimationServiceImpl implements EstimationService {
             return paymentRepository.save(payment);
         }
 
-
-        // Create Delivery object
-        private Delivery createDelivery (Status status, PaymentMethod paymentMethod, Orders order, Rate rate){
-            Delivery delivery = new Delivery();
-            delivery.setStatus(status);
-            delivery.setPaymentMethod(paymentMethod);
-            delivery.setOrders(order);
-            delivery.setRate(rate);
-
-
-            delivery.setUuid(UUID.randomUUID().toString());
-
-            return deliveryRepository.save(delivery);
-        }
-
-
         public Rate createRate () {
             Rate rate = new Rate();
             rate.setRating(0.0);
@@ -529,5 +512,20 @@ public class EstimationServiceImpl implements EstimationService {
             rate.setUpdatedAt(null);
             rate.setUuid(UUID.randomUUID().toString());
             return rateRepository.save(rate);
+        }
+        // Create Delivery object
+        private Delivery createDelivery (Status status, PaymentMethod paymentMethod, Orders order, double rating, String commentary){
+            Delivery delivery = new Delivery();
+            delivery.setStatus(status);
+            delivery.setPaymentMethod(paymentMethod);
+            delivery.setOrders(order);
+            delivery.setRating(rating);
+            delivery.setCommentary(commentary);
+
+
+
+            delivery.setUuid(UUID.randomUUID().toString());
+
+            return deliveryRepository.save(delivery);
         }
     }

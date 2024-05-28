@@ -26,6 +26,7 @@ public class Delivery {
     private Orders orders;
 
     @ManyToOne
+    @JoinColumn(name = "driver_id")
     private User user;
 
     @OneToOne
@@ -33,4 +34,7 @@ public class Delivery {
 
     @OneToOne(mappedBy = "delivery")
     private Rate rate;
+
+    private double rating;
+    private String commentary;
 }

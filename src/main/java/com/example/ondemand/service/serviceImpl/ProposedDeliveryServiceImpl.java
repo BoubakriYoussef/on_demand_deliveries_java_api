@@ -1,9 +1,11 @@
 package com.example.ondemand.service.serviceImpl;
 
+import com.example.ondemand.authentication.authService.AuthenticationService;
 import com.example.ondemand.entities.Delivery;
 import com.example.ondemand.entities.ProposedDelivery;
 import com.example.ondemand.entities.ProposedDeliveryStatus;
 import com.example.ondemand.entities.User;
+import com.example.ondemand.enumClass.Decision;
 import com.example.ondemand.enumClass.Status;
 import com.example.ondemand.exceptions.DeliveryNotFoundException;
 import com.example.ondemand.exceptions.NoAvailableDriversException;
@@ -40,7 +42,10 @@ public class ProposedDeliveryServiceImpl implements ProposedDeliveryService {
     private ProposedDeliveryRepository proposedDeliveryRepository; // Inject ProposedDeliveryRepository
 
     @Autowired
-    private DeliveryService    deliveryService;
+    private DeliveryService deliveryService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Override
     public void proposeDeliveryToDriver(Long deliveryId) {
@@ -92,6 +97,9 @@ public class ProposedDeliveryServiceImpl implements ProposedDeliveryService {
 
     @Override
     public void acceptOrRejectProposedDelivery(Long proposedDeliveryId, DriverDecisionRequest driverDecisionRequest) {
+
+        User authenticatedUser = authenticationService.getAuthenticatedUser();
+
         ProposedDelivery proposedDelivery = proposedDeliveryRepository.findById(proposedDeliveryId)
                 .orElseThrow(() -> new EntityNotFoundException("Proposed delivery not found with id: " + proposedDeliveryId));
 
@@ -102,9 +110,9 @@ public class ProposedDeliveryServiceImpl implements ProposedDeliveryService {
             return;
         }
 
-        if (driverDecisionRequest.isAccept()) {
+        if (driverDecisionRequest.getDecision() == Decision.ACCEPTED) {
+            deliveryService.assignDriverToDelivery(proposedDelivery.getDelivery().getId(), authenticatedUser.getId());
             deliveryService.updateDeliveryStatus(proposedDelivery.getDelivery().getId(), Status.ASSIGNED);
-            deliveryService.assignDriverToDelivery(proposedDelivery.getDelivery().getId(), proposedDelivery.getUser().getId());
             proposedDelivery.setStatus(ProposedDeliveryStatus.ACCEPTED);
         } else {
             proposedDelivery.setStatus(ProposedDeliveryStatus.REFUSED);
