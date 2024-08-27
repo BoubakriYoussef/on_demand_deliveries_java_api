@@ -13,12 +13,10 @@ import com.example.ondemand.service.EstimationService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.tomcat.util.json.ParseException;
-import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +58,9 @@ public class EstimationServiceImpl implements EstimationService {
 
     @Autowired
     private RateRepository rateRepository;
+
+    @Autowired
+    private EvaluationRepository evaluationRepository;
 
 
     @Override
@@ -194,6 +195,11 @@ public class EstimationServiceImpl implements EstimationService {
         }
     }
 
+    @Override
+    public List<Estimation> getAllEstimations() {
+        return estimationRepository.findAll();
+    }
+
 
     //Créer Estimation
         @Override
@@ -273,7 +279,19 @@ public class EstimationServiceImpl implements EstimationService {
             estimation.setRestaurant(restaurant);
             estimation.setUser(authenticatedUser);
 
-            return estimationRepository.save(estimation);
+
+            Estimation saveEstimation = estimationRepository.save(estimation);
+
+
+            Evaluation evaluation = new Evaluation();
+            evaluation.setDelivery(delivery);
+            evaluation.setUser(authenticatedUser);
+
+
+
+            evaluationRepository.save(evaluation);
+
+            return saveEstimation;
         }
 
 
@@ -497,9 +515,7 @@ public class EstimationServiceImpl implements EstimationService {
             payment.setTotalValue(0.0);
             payment.setWithdrawDone(false);
             payment.setTip(tip);
-
             payment.setUuid(UUID.randomUUID().toString());
-
             // Save payment only if it contains valid data
             return paymentRepository.save(payment);
         }
@@ -513,6 +529,8 @@ public class EstimationServiceImpl implements EstimationService {
             rate.setUuid(UUID.randomUUID().toString());
             return rateRepository.save(rate);
         }
+
+
         // Create Delivery object
         private Delivery createDelivery (Status status, PaymentMethod paymentMethod, Orders order, double rating, String commentary){
             Delivery delivery = new Delivery();
@@ -521,11 +539,7 @@ public class EstimationServiceImpl implements EstimationService {
             delivery.setOrders(order);
             delivery.setRating(rating);
             delivery.setCommentary(commentary);
-
-
-
             delivery.setUuid(UUID.randomUUID().toString());
-
             return deliveryRepository.save(delivery);
         }
     }

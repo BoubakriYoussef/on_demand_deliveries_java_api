@@ -8,21 +8,15 @@ import com.example.ondemand.repositories.RestaurantRepository;
 import com.example.ondemand.securityConfiguration.JwtService;
 import com.example.ondemand.repositories.UserRepository;
 import com.example.ondemand.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -108,4 +102,16 @@ public class UserServiceImpl implements UserService {
     public User findByUsername(String username) {
         return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
     }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User updateUser(User user) {
+        return null;
+    }
+
+
 }

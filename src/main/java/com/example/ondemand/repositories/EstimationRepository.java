@@ -18,5 +18,7 @@ public interface EstimationRepository extends JpaRepository<Estimation,Long> {
     @Override
     Optional<Estimation> findById(Long aLong);
 
+    List<Estimation> findAll();
 
+    void deleteEstimationById(Long idEstimation);
 }

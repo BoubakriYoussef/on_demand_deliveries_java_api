@@ -20,4 +20,5 @@ public interface ProposedDeliveryRepository extends JpaRepository<ProposedDelive
 
     List<ProposedDelivery> findByStatusAndExpirationTimeBefore(ProposedDeliveryStatus status, LocalDateTime expirationTime);
 
+    List<ProposedDelivery> findByUser(User user);
 }

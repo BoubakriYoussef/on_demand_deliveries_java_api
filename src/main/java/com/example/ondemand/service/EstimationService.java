@@ -54,4 +54,7 @@ public interface EstimationService {
                                               double restaurantLongitude,
                                               OrderType orderType) throws IOException ;
 
+    List<Estimation> getAllEstimations();
+
+
 }

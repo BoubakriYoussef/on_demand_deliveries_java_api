@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
@@ -37,6 +38,7 @@ public class AuthenticationController {
         System.out.print("name :" + name) ;
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
+
 
     @PutMapping("/user/{userId}/changePassword")
     public ResponseEntity<?> changePassword(

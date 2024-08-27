@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/estimation")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class EstimationController {
 
 
@@ -68,6 +69,12 @@ public class EstimationController {
         return ResponseEntity.ok(updatedEstimation);
     }
 
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Estimation>> getAllEstimations(){
+        List<Estimation> estimations = estimationService.getAllEstimations();
+        return ResponseEntity.ok(estimations);
+    }
 
 /*    //For testing purpose
     @GetMapping("/calculate")

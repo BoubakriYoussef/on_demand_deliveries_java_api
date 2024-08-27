@@ -4,7 +4,7 @@ import com.example.ondemand.authentication.authService.AuthenticationService;
 import com.example.ondemand.entities.*;
 import com.example.ondemand.enumClass.Status;
 import com.example.ondemand.exceptions.DeliveryNotFoundException;
-import com.example.ondemand.exceptions.UnauthorizedException;
+
 import com.example.ondemand.repositories.DeliveryRepository;
 import com.example.ondemand.repositories.RateRepository;
 import com.example.ondemand.repositories.UserRepository;
@@ -22,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 
 
 import java.util.List;
@@ -148,5 +147,11 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         // Sauvegarder la delivery mise à jour dans la base de données
         deliveryRepository.save(delivery);
+    }
+
+
+    @Override
+    public List<Delivery> getUserDeliveries(User user) {
+        return deliveryRepository.findByUser(user);
     }
 }

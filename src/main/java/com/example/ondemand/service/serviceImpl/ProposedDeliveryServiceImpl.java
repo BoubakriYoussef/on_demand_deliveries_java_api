@@ -117,7 +117,6 @@ public class ProposedDeliveryServiceImpl implements ProposedDeliveryService {
         } else {
             proposedDelivery.setStatus(ProposedDeliveryStatus.REFUSED);
         }
-
         proposedDeliveryRepository.save(proposedDelivery);
     }
 
@@ -131,5 +130,10 @@ public class ProposedDeliveryServiceImpl implements ProposedDeliveryService {
             proposal.setStatus(ProposedDeliveryStatus.IGNORED);
             proposedDeliveryRepository.save(proposal);
         }
+    }
+
+    @Override
+    public List<ProposedDelivery> getProposedDeliveriesForUser(User user){
+        return proposedDeliveryRepository.findByUser(user);
     }
 }

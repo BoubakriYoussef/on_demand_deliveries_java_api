@@ -10,8 +10,6 @@ import com.example.ondemand.request.rateRequest.RateUpdateRequest;
 import com.example.ondemand.service.DeliveryService;
 import com.example.ondemand.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.SecondaryTable;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
@@ -25,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/deliveries")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class DeliveryController {
 
     @Autowired
@@ -36,15 +35,6 @@ public class DeliveryController {
     @Autowired
     UserService userService;
 
-   /* @PutMapping("/{deliveryId}/payment")
-    public ResponseEntity<String> updatePayment(@PathVariable Long deliveryId, @RequestBody UpdateDeliveryPaymentRequest updateRequest) {
-        try {
-            deliveryService.updateDeliveryDetails(deliveryId, updateRequest);
-            return ResponseEntity.ok("Delivery details updated successfully.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }*/
 
     @PutMapping("/{deliveryId}/rate")
     public ResponseEntity<String> updateRate(@PathVariable Long deliveryId, @RequestBody RateUpdateRequest rateUpdateRequest) {

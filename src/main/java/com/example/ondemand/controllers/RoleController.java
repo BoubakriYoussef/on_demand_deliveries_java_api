@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/role")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class RoleController {
 
 
@@ -31,8 +32,6 @@ public class RoleController {
             ){
         return ResponseEntity.ok(roleService.addRole(roleRequest));
     }
-
-
 
     @GetMapping("/allRoles")
     public ResponseEntity<List<Role>> getAllRoles() {

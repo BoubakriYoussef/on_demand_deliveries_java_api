@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.hibernate.type.descriptor.java.ObjectJavaType;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +15,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
 
 
-    private static final String SECRET_KEY="9350a0b757b624afcf483cd8723dab51349deee5c4741064c1265aeae5ea898d";
+    private static final String SECRET_KEY="fe8c55b0a89e8f9b384b346483a038f6ef0cacf665d4033aaf8507c3f33023df";
     public String extractUsername(String token) {
 
         return extractClaim(token, Claims::getSubject);
@@ -32,7 +35,15 @@ public class JwtService {
 
     // Method that
     public String generateToken(UserDetails userDetails){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", getRolesFromUser(userDetails));
         return generateToken(new HashMap<>(),userDetails);
+    }
+
+    private Object getRolesFromUser(UserDetails userDetails) {
+        return userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
     }
 
     // Validate TOKEN & UserDetails to compare if token belongs to User

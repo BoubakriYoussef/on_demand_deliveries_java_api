@@ -32,5 +32,4 @@ public class PricingStrategy {
     private String uuid;
     @OneToMany
     private List<Estimation> estimations;
-
 }

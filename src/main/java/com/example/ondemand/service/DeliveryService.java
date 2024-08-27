@@ -1,6 +1,7 @@
 package com.example.ondemand.service;
 
 import com.example.ondemand.entities.Delivery;
+import com.example.ondemand.entities.User;
 import com.example.ondemand.enumClass.Status;
 import com.example.ondemand.request.DeliveryRequest.UpdateDeliveryPaymentRequest;
 import com.example.ondemand.request.DeliveryRequest.DriverDecisionRequest;
@@ -27,4 +28,6 @@ public interface DeliveryService {
     List<Delivery> findDeliveriesByUserId(Long id);
 
     public void updateDelivery(Long deliveryId, RateUpdateRequest updateRequest);
+
+    public List<Delivery> getUserDeliveries(User user);
 }
